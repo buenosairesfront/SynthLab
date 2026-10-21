@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SynthLab</title>
+<script>
+// When Pages serves the repo root, the site lives under docs/: /Repo/app/ → /Repo/docs/app/
+(function () {
+  var parts = location.pathname.split('/');
+  var repo = parts[1] || '';
+  if (location.hostname.endsWith('github.io') && repo && parts[2] !== 'docs') {
+    location.replace('/' + repo + '/docs/' + parts.slice(2).join('/') + location.search + location.hash);
+  }
+})();
+</script>
+</head>
+<body style="background:#0B0B14;color:#EDEBFF;font-family:system-ui;text-align:center;padding-top:30vh">
+<p>Página no encontrada.</p>
+<a href="./" style="color:#FF4FD8">Volver a SynthLab →</a>
+</body>
+</html>
