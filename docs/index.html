@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SynthLab — Aprendé síntesis viendo y escuchando</title>
+<meta name="description" content="App gratuita para aprender síntesis de sonido: osciladores, filtros, envolventes, LFO, FM, wavetable y aditiva, con visualizaciones en vivo, recetas de sonidos, laboratorio experimental y retos de oído.">
+<meta name="theme-color" content="#0B0B14">
+<meta property="og:title" content="SynthLab — Aprendé síntesis viendo y escuchando">
+<meta property="og:description" content="24 lecciones interactivas, 10 recetas de sonidos, un sintetizador completo, laboratorio experimental y entrenamiento de oído.">
+<meta property="og:image" content="img/filter.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 108'%3E%3Crect width='108' height='108' rx='24' fill='%230B0B14'/%3E%3Cpath d='M18,54 C26,26 34,26 40,54 S54,82 60,54 L68,30 L68,78 L76,54 L90,54' fill='none' stroke='%23FF4FD8' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#0B0B14;--panel:#151527;--line:#26264a;--text:#EDEBFF;--dim:#8C89B5;--pink:#FF4FD8;--cyan:#3EF0FF;--lime:#B6FF3B;--orange:#FFB23E;--violet:#8A7DFF;--red:#FF5A6E}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:#0b0b14b8;border-bottom:1px solid #ffffff0d}
+nav.top .wrap{display:flex;align-items:center;gap:14px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;text-decoration:none}
+.brand svg{width:30px;height:30px;filter:drop-shadow(0 0 6px var(--pink))}
+nav.top .sp{flex:1}
+nav.top a.l{font-size:14px;color:var(--dim);text-decoration:none}
+nav.top a.l:hover{color:var(--text)}
+@media(max-width:640px){nav.top a.l.hide{display:none}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 22px;border-radius:14px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:#1c1c33;transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.pri{background:linear-gradient(135deg,var(--pink),var(--violet));border:0;color:#fff;box-shadow:0 8px 30px #ff4fd855}
+.btn.pri:hover{box-shadow:0 10px 40px #ff4fd899}
+.btn svg{width:20px;height:20px}
+.btn.sm{padding:8px 14px;font-size:14px;border-radius:10px}
+/* hero */
+.hero{user-select:none;-webkit-user-select:none;position:relative;min-height:min(92vh,820px);display:flex;align-items:center;overflow:hidden;border-bottom:1px solid var(--line);background:radial-gradient(70% 60% at 70% 30%,#2a145088,transparent),radial-gradient(60% 50% at 10% 80%,#0f3a4a55,transparent)}
+#wave{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;pointer-events:none;padding-top:40px;padding-bottom:40px}
+.hero .wrap>*{pointer-events:auto}
+.tag{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);border:1px solid #3ef0ff55;padding:5px 12px;border-radius:30px;background:#3ef0ff11}
+h1{font-size:clamp(44px,7.5vw,88px);line-height:.98;margin:18px 0 16px;letter-spacing:-.035em}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--cyan),var(--pink) 60%,var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 30px #ff4fd855)}
+.lead{font-size:19px;color:#c9c6ee;max-width:560px;margin:0 0 28px}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.hint{margin-top:18px;font-size:13px;color:var(--dim);display:flex;align-items:center;gap:8px}
+.hint i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:bl 1.4s infinite}
+@keyframes bl{50%{opacity:.2}}
+.phone{position:relative;width:min(320px,80vw);aspect-ratio:585/1266;margin:0 auto;border-radius:44px;padding:10px;background:linear-gradient(160deg,#2b2b4a,#0c0c18);box-shadow:0 30px 80px #000c,0 0 0 1px #ffffff14,0 0 80px #ff4fd833}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:#000}
+.phone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
+.phone img.on{opacity:1}
+.phone:before{content:'';position:absolute;top:18px;left:50%;transform:translateX(-50%);width:80px;height:20px;border-radius:12px;background:#000;z-index:2}
+@media(max-width:860px){.hero .wrap{grid-template-columns:1fr;text-align:left}.phone{width:min(270px,70vw)}}
+/* sections */
+section{padding:90px 0;position:relative}
+h2{font-size:clamp(30px,4.4vw,48px);line-height:1.08;margin:0 0 14px;letter-spacing:-.025em}
+.kicker{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--pink);margin-bottom:10px}
+.sub{color:var(--dim);font-size:18px;max-width:640px;margin:0 0 40px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:-50px;position:relative;z-index:3}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;text-align:center}
+.stat b{display:block;font-size:40px;line-height:1;background:linear-gradient(135deg,var(--cyan),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
+.stat span{font-size:13px;color:var(--dim)}
+@media(max-width:700px){.stats{grid-template-columns:1fr 1fr}}
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.mode{display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 14%,transparent),var(--panel) 55%);border:1px solid var(--line);border-radius:24px;padding:22px;overflow:hidden}
+.mode img{width:150px;border-radius:18px;box-shadow:0 14px 40px #000a;border:1px solid #ffffff14}
+.mode h3{margin:0 0 6px;font-size:24px;color:var(--c)}
+.mode p{margin:0;color:#c9c6ee;font-size:15px}
+.mode ul{margin:10px 0 0;padding-left:18px;color:var(--dim);font-size:14px}
+@media(max-width:900px){.modes{grid-template-columns:1fr}}
+@media(max-width:460px){.mode{grid-template-columns:1fr}.mode img{width:100%;max-width:220px}}
+.mods{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mod{position:relative;padding:20px 20px 20px 24px;border-radius:18px;background:var(--panel);border:1px solid var(--line);overflow:hidden}
+.mod:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c);box-shadow:0 0 14px var(--c)}
+.mod small{color:var(--c);font-weight:800;font-size:12px;letter-spacing:.1em}
+.mod b{display:block;font-size:18px;margin:2px 0 4px}
+.mod span{font-size:14px;color:var(--dim)}
+.mod svg{position:absolute;right:14px;top:16px;width:70px;height:28px;opacity:.9}
+@media(max-width:900px){.mods{grid-template-columns:1fr 1fr}}@media(max-width:560px){.mods{grid-template-columns:1fr}}
+.strip{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 20px 30px;margin:0 -20px;scrollbar-width:thin}
+.strip figure{flex:none;margin:0;scroll-snap-align:center;width:230px;text-align:center}
+.strip img{width:100%;border-radius:24px;border:1px solid #ffffff1a;box-shadow:0 18px 50px #000b;transition:transform .3s}
+.strip img:hover{transform:translateY(-6px) rotate(-1deg)}
+.strip figcaption{font-size:13px;color:var(--dim);margin-top:10px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:10px 16px;border-radius:30px;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);background:color-mix(in srgb,var(--c) 12%,transparent);color:var(--c);font-weight:700;font-size:14px;cursor:pointer;transition:.2s}
+.chip:hover,.chip.on{background:var(--c);color:#111;box-shadow:0 0 20px color-mix(in srgb,var(--c) 70%,transparent)}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;position:relative}
+.step:before{counter-increment:s;content:counter(s);display:flex;width:38px;height:38px;border-radius:50%;align-items:center;justify-content:center;font-weight:900;background:linear-gradient(135deg,var(--pink),var(--violet));margin-bottom:12px;box-shadow:0 0 20px #ff4fd866}
+.step b{display:block;margin-bottom:6px}.step p{margin:0;color:var(--dim);font-size:14px}
+@media(max-width:900px){.steps{grid-template-columns:1fr 1fr}}@media(max-width:500px){.steps{grid-template-columns:1fr}}
+.cta-final{text-align:center;padding:70px 24px;border-radius:30px;background:radial-gradient(80% 120% at 50% 0%,#3a1466,#151527);border:1px solid #4a2a7a;box-shadow:0 0 100px #ff4fd822 inset}
+.cta-final .ctas{justify-content:center}
+.tech{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tech div{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;font-size:14px;color:var(--dim)}
+.tech b{display:block;color:var(--text);margin-bottom:4px;font-size:15px}
+@media(max-width:800px){.tech{grid-template-columns:1fr}}
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--dim);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+.reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<nav class="top"><div class="wrap">
+  <a class="brand" href="#"><svg viewBox="0 0 108 108"><path d="M18,54 C26,26 34,26 40,54 S54,82 60,54 L68,30 L68,78 L76,54 L90,54" fill="none" stroke="#FF4FD8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M18,74 L90,74" stroke="#3EF0FF" stroke-width="4" stroke-linecap="round"/></svg>SynthLab</a>
+  <span class="sp"></span>
+  <a class="l hide" href="#aprender">Contenido</a>
+  <a class="l hide" href="#instalar">Instalar</a>
+  <a class="l gh" href="#" target="_blank" rel="noopener">GitHub</a>
+  <a class="btn sm pri" href="SynthLab.apk" download>Descargar</a>
+</div></nav>
+
+<header class="hero">
+  <canvas id="wave" aria-label="Sintetizador interactivo: tocá y arrastrá"></canvas>
+  <div class="wrap">
+    <div>
+      <span class="tag">App gratis · Android + web</span>
+      <h1>Aprendé síntesis <em>viendo y escuchando</em></h1>
+      <p class="lead">Osciladores, filtros, envolventes, LFO, FM, wavetable y aditiva. Cada concepto con su sonido y su gráfico en vivo: movés una perilla y ves lo que escuchás.</p>
+      <div class="ctas">
+        <a class="btn pri" href="SynthLab.apk" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M6 11l6 6 6-6M4 21h16"/></svg>Descargar para Android</a>
+        <a class="btn" href="app/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Probar en el navegador</a>
+      </div>
+      <div class="hint"><i></i>Tocá y arrastrá el fondo: es un sintetizador.</div>
+    </div>
+    <div class="phone"><div class="scr" id="phone">
+      <img class="on" src="img/filter.jpg" alt="Lección de resonancia con curva de filtro sobre el espectro">
+      <img src="img/wavetable.jpg" alt="Wavetable en 3D">
+      <img src="img/adsr.jpg" alt="Editor de envolvente ADSR">
+      <img src="img/fm.jpg" alt="Bandas laterales de síntesis FM">
+      <img src="img/chaos.jpg" alt="Secuenciador del caos">
+    </div></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats reveal">
+    <div class="stat"><b>24</b><span>lecciones interactivas</span></div>
+    <div class="stat"><b>10</b><span>recetas de sonidos</span></div>
+    <div class="stat"><b>6</b><span>experimentos de laboratorio</span></div>
+    <div class="stat"><b>24</b><span>retos de oído</span></div>
+  </div>
+</div>
+
+<section id="como">
+  <div class="wrap">
+    <div class="kicker">Cuatro formas de aprender</div>
+    <h2 class="reveal">Leé, tocá, experimentá, entrená el oído.</h2>
+    <p class="sub reveal">Nada de teoría seca: cada pantalla tiene un sonido que podés tocar y un gráfico que reacciona.</p>
+    <div class="modes">
+      <div class="mode reveal" style="--c:var(--cyan)"><img src="img/home.jpg" alt="" loading="lazy"><div><h3>Aprender</h3><p>9 módulos con lecciones cortas. Cada una tiene un visualizador en vivo, controles y tareas que se marcan solas cuando las lográs.</p><ul><li>"Hacé un pluck: sustain 0 y decay corto"</li><li>"Hacé una campana: ratio no entero"</li></ul></div></div>
+      <div class="mode reveal" style="--c:var(--pink)"><img src="img/play.jpg" alt="" loading="lazy"><div><h3>Tocar</h3><p>Un sintetizador completo con secuenciador de 16 pasos.</p><ul><li>2 osciladores + unison de 7 voces</li><li>Filtro 12/24 dB, dos ADSR, LFO</li><li>FM, wavetable, aditiva, drive, bitcrush, delay, reverb</li></ul></div></div>
+      <div class="mode reveal" style="--c:var(--lime)"><img src="img/lissajous.jpg" alt="" loading="lazy"><div><h3>Laboratorio</h3><p>Experimentos para entender el sonido desde otros ángulos.</p><ul><li>Cuerda física Karplus-Strong</li><li>Lissajous y ring mod · Secuenciador del caos</li><li>Dibujá tu onda · Pad XY · Destructor</li></ul></div></div>
+      <div class="mode reveal" style="--c:var(--orange)"><img src="img/quiz.jpg" alt="" loading="lazy"><div><h3>Retos de oído</h3><p>¿Qué forma de onda es? ¿Qué filtro? ¿Vibrato o trémolo? Y los desafíos "igualá el sonido": escuchás un objetivo y lo reproducís moviendo un control.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="aprender" style="background:linear-gradient(180deg,transparent,#11112288,transparent)">
+  <div class="wrap">
+    <div class="kicker">El temario</div>
+    <h2 class="reveal">De "¿qué es una onda?" a la síntesis FM.</h2>
+    <p class="sub reveal">Pensado para quien ya escuchó hablar de osciladores y filtros y quiere entenderlos de verdad.</p>
+    <div class="mods" id="mods"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Galería</div>
+    <h2 class="reveal">Hiper visual, por diseño.</h2>
+    <div class="strip">
+      <figure><img src="img/filter.jpg" alt="" loading="lazy"><figcaption>Curva del filtro sobre el espectro, arrastrable</figcaption></figure>
+      <figure><img src="img/wavetable.jpg" alt="" loading="lazy"><figcaption>Wavetable en 3D con el cuadro actual</figcaption></figure>
+      <figure><img src="img/adsr.jpg" alt="" loading="lazy"><figcaption>ADSR editable con la nota en vivo</figcaption></figure>
+      <figure><img src="img/fm.jpg" alt="" loading="lazy"><figcaption>Bandas laterales FM (Bessel) en tiempo real</figcaption></figure>
+      <figure><img src="img/additive.jpg" alt="" loading="lazy"><figcaption>Aditiva: dibujá los armónicos</figcaption></figure>
+      <figure><img src="img/chaos.jpg" alt="" loading="lazy"><figcaption>El mapa logístico tocando música</figcaption></figure>
+      <figure><img src="img/lissajous.jpg" alt="" loading="lazy"><figcaption>Figuras de Lissajous en estéreo</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Recetas</div>
+    <h2 class="reveal">Diez sonidos clásicos, paso a paso.</h2>
+    <p class="sub reveal">Arrancás con un oscilador pelado y cada paso agrega una pieza mientras lo escuchás. Tocá una receta para oír una muestra.</p>
+    <div class="chips" id="chips"></div>
+  </div>
+</section>
+
+<section id="instalar">
+  <div class="wrap">
+    <div class="kicker">Instalar en Android</div>
+    <h2 class="reveal">Cuatro toques y listo.</h2>
+    <p class="sub reveal">SynthLab no está en la Play Store: se instala directo desde el archivo APK. Funciona sin internet y pesa menos de 100 KB.</p>
+    <div class="steps">
+      <div class="step reveal"><b>Descargá el APK</b><p>Desde el celular, tocá <a href="SynthLab.apk" download>Descargar</a>.</p></div>
+      <div class="step reveal"><b>Abrí el archivo</b><p>Desde la notificación de descarga o desde Archivos → Descargas.</p></div>
+      <div class="step reveal"><b>Permití la instalación</b><p>Android te pide permitir apps de esta fuente: Configuración → activar → volver.</p></div>
+      <div class="step reveal"><b>Instalá</b><p>Si Play Protect avisa, tocá "Más detalles" → "Instalar de todas formas".</p></div>
+    </div>
+    <p class="sub" style="margin-top:28px">¿Tenés iPhone o compu? Usá la <a href="app/">versión web</a>: es la misma app, en el navegador.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Por dentro</div>
+    <h2 class="reveal">Hecha con Web Audio, sin dependencias.</h2>
+    <div class="tech">
+      <div class="reveal"><b>Motor de síntesis propio</b>Polifónico, sobre Web Audio API: osciladores con unison, filtros en cascada, envolventes, LFO, FM, wavetables generadas por Fourier.</div>
+      <div class="reveal"><b>Visualizaciones en Canvas</b>Osciloscopio con disparo, espectro logarítmico, respuesta real del filtro, ADSR con la nota en vivo, vistas 3D.</div>
+      <div class="reveal"><b>Código abierto</b>JavaScript puro, cero librerías. El APK se compila con un script, sin Android Studio.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="cta-final reveal">
+      <h2>Empezá a sintetizar.</h2>
+      <p class="sub" style="margin:0 auto 28px">Gratis, sin anuncios, sin cuentas.</p>
+      <div class="ctas">
+        <a class="btn pri" href="SynthLab.apk" download>Descargar para Android</a>
+        <a class="btn" href="app/">Probar en el navegador</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>SynthLab · código abierto (licencia MIT)</span><span><a class="gh" href="#" target="_blank" rel="noopener">Ver el código en GitHub</a></span></div></footer>
+
+<script>
+(() => {
+  // GitHub link inferred from the Pages URL (user.github.io/repo)
+  const m = location.hostname.match(/^([^.]+)\.github\.io$/);
+  const repo = location.pathname.split('/').filter(Boolean)[0];
+  document.querySelectorAll('a.gh').forEach((a) => { if (m) a.href = `https://github.com/${m[1]}/${repo || m[1] + '.github.io'}`; else a.style.display = 'none'; });
+
+  // phone slideshow
+  const imgs = [...document.querySelectorAll('#phone img')]; let k = 0;
+  setInterval(() => { imgs[k].classList.remove('on'); k = (k + 1) % imgs.length; imgs[k].classList.add('on'); }, 2800);
+
+  // reveal on scroll
+  const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+  // modules
+  const MODS = [['Fundamentos del sonido', 'Onda, frecuencia, timbre y armónicos', '#3EF0FF', 2], ['Osciladores', 'Formas de onda, pulso, detune, unison y ruido', '#FF4FD8', 4], ['Filtros', 'Cutoff, resonancia, tipos y pendientes', '#B6FF3B', 4], ['Envolventes', 'ADSR de volumen, de filtro y de pitch', '#FFB23E', 3], ['LFO y modulación', 'Vibrato, trémolo, wah y S&H', '#8A7DFF', 2], ['Síntesis aditiva', 'Construir sonidos sumando senos', '#3EF0FF', 2], ['Síntesis FM', 'Portadora, moduladora, ratio e índice', '#FFB23E', 3], ['Wavetable', 'Tablas de ondas y morphing', '#FF4FD8', 2], ['Efectos', 'Saturación, bitcrush, delay y reverb', '#B6FF3B', 2]];
+  const wp = (i) => { let d = ''; for (let x = 0; x <= 70; x++) { const t = (x / 70) * Math.PI * 4; const y = [Math.sin(t), Math.sin(t) + Math.sin(3 * t) / 3, ((t / Math.PI) % 2) - 1][i % 3]; d += (x ? 'L' : 'M') + x + ',' + (14 - y * 10).toFixed(1); } return d; };
+  document.getElementById('mods').innerHTML = MODS.map(([t, s, c, n], i) => `<div class="mod reveal" style="--c:${c}"><svg viewBox="0 0 70 28"><path d="${wp(i)}" fill="none" stroke="${c}" stroke-width="2"/></svg><small>MÓDULO ${i + 1} · ${n} LECCIONES</small><b>${t}</b><span>${s}</span></div>`).join('');
+  document.querySelectorAll('#mods .reveal').forEach((el) => io.observe(el));
+
+  // ---------- tiny synth for the hero + recipe chips ----------
+  let ac, out, ana, buf;
+  const audio = () => {
+    if (!ac) {
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      const comp = ac.createDynamicsCompressor(); out = ac.createGain(); out.gain.value = 0.5;
+      const dl = ac.createDelay(1), fb = ac.createGain(); dl.delayTime.value = 0.32; fb.gain.value = 0.35;
+      out.connect(comp); out.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(comp);
+      ana = ac.createAnalyser(); ana.fftSize = 2048; buf = new Float32Array(2048);
+      comp.connect(ana); ana.connect(ac.destination);
+    }
+    if (ac.state !== 'running') ac.resume();
+    return ac;
+  };
+  const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  function note(m, t, dur, o) {
+    o = Object.assign({ wave: 'sawtooth', cut: 2000, q: 4, env: 3000, a: 0.005, d: 0.3, s: 0.3, r: 0.3, det: 8 }, o);
+    const c = audio(); t = t || c.currentTime;
+    const g = c.createGain(), f = c.createBiquadFilter(); f.type = 'lowpass'; f.Q.value = o.q;
+    f.frequency.setValueAtTime(o.cut + o.env, t); f.frequency.setTargetAtTime(o.cut, t, o.d / 3);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.5, t + o.a); g.gain.setTargetAtTime(0.5 * o.s, t + o.a, o.d / 3);
+    g.gain.setTargetAtTime(0, t + dur, o.r / 4);
+    const oscs = [-1, 1].map((s) => { const x = c.createOscillator(); x.type = o.wave; x.frequency.value = mtof(m); x.detune.value = s * o.det; x.connect(f); x.start(t); x.stop(t + dur + o.r * 2); return x; });
+    if (o.fm) { const md = c.createOscillator(), mg = c.createGain(); md.frequency.value = mtof(m) * o.fm; mg.gain.setValueAtTime(mtof(m) * o.fm * o.idx, t); mg.gain.setTargetAtTime(0, t, 0.4); md.connect(mg); oscs.forEach((x) => mg.connect(x.frequency)); md.start(t); md.stop(t + dur + o.r * 2); }
+    f.connect(g); g.connect(out);
+    return { f, g, oscs };
+  }
+  // hero: touch & drag = pitch (x, pentatonic) and cutoff (y)
+  const cv = document.getElementById('wave'), g2 = cv.getContext('2d');
+  const PENTA = [0, 3, 5, 7, 10];
+  let live = null, lastNote = null, tt = 0;
+  const pos = (e) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; };
+  const noteAt = (x) => { const s = Math.floor(x * 15); return 45 + Math.floor(s / 5) * 12 + PENTA[s % 5]; };
+  const cutAt = (y) => 200 * Math.pow(40, 1 - y);
+  cv.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    cv.setPointerCapture(e.pointerId);
+    const [x, y] = pos(e); lastNote = noteAt(x);
+    live = note(lastNote, 0, 60, { cut: cutAt(y), env: 1500, a: 0.01, d: 0.4, s: 0.7, r: 0.5, q: 7 });
+  });
+  cv.addEventListener('pointermove', (e) => {
+    if (!live) return;
+    const [x, y] = pos(e), n = noteAt(x), t = ac.currentTime;
+    live.f.frequency.cancelScheduledValues(t); live.f.frequency.setTargetAtTime(cutAt(y), t, 0.03);
+    if (n !== lastNote) { lastNote = n; live.oscs.forEach((o) => o.frequency.setTargetAtTime(mtof(n), t, 0.03)); }
+  });
+  const up = () => { if (!live) return; const t = ac.currentTime; live.g.gain.cancelScheduledValues(t); live.g.gain.setTargetAtTime(0, t, 0.12); live.oscs.forEach((o) => o.stop(t + 1)); live = null; };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+
+  function draw() {
+    const d = Math.min(devicePixelRatio || 1, 2), w = Math.round(cv.clientWidth * d), h = Math.round(cv.clientHeight * d);
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    g2.clearRect(0, 0, w, h); tt += 0.01;
+    let energy = 0;
+    if (ana) { ana.getFloatTimeDomainData(buf); for (let i = 0; i < 2048; i += 8) energy = Math.max(energy, Math.abs(buf[i])); }
+    const cols = ['#FF4FD8', '#3EF0FF', '#8A7DFF', '#B6FF3B'];
+    cols.forEach((c, k) => {
+      g2.beginPath();
+      for (let i = 0; i <= 240; i++) {
+        const x = i / 240, env = Math.pow(Math.sin(Math.PI * x), 1.5);
+        let y = Math.sin(x * Math.PI * (3 + k) + tt * (1 + k * 0.6)) * 0.55 + Math.sin(x * Math.PI * (7 + k * 2) - tt * 2) * 0.25;
+        if (ana && energy > 0.01) y += buf[(i * 8 + k * 64) % 2048] * 3;
+        g2.lineTo(x * w, h * (0.5 + k * 0.04) + y * env * h * (0.09 + energy * 0.25));
+      }
+      g2.strokeStyle = c; g2.globalAlpha = k === 3 ? 0.35 : 0.6; g2.lineWidth = 2 * d; g2.shadowColor = c; g2.shadowBlur = (12 + energy * 40) * d; g2.stroke();
+    });
+    g2.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // recipe previews
+  const R = [
+    ['Bajo ácido 303', '#B6FF3B', (t) => [36, 36, 48, 36, 39, 36, 46, 43].forEach((n, i) => note(n, t + i * 0.14, 0.1, { cut: 250, q: 18, env: 3500, d: 0.18, s: 0.4, r: 0.05 }))],
+    ['Pad cálido', '#8A7DFF', (t) => [48, 55, 58, 63].forEach((n) => note(n, t, 2.2, { cut: 1500, env: 0, a: 0.8, s: 0.9, r: 1.5, det: 14 }))],
+    ['Pluck', '#3EF0FF', (t) => [60, 63, 67, 70, 72, 70, 67, 63].forEach((n, i) => note(n, t + i * 0.16, 0.08, { wave: 'square', cut: 400, env: 4000, d: 0.12, s: 0, r: 0.2 }))],
+    ['Supersaw lead', '#FF4FD8', (t) => [72, 74, 75, 79].forEach((n, i) => note(n, t + i * 0.3, 0.27, { cut: 6000, env: 0, det: 25, s: 0.9 }))],
+    ['Bajo Reese', '#FFB23E', (t) => note(31, t, 1.6, { cut: 900, env: 300, det: 22, s: 1, d: 1, q: 2 })],
+    ['Campana FM', '#3EF0FF', (t) => [72, 79, 76].forEach((n, i) => note(n, t + i * 0.6, 0.1, { wave: 'sine', cut: 15000, env: 0, q: 0.5, d: 2.5, s: 0, r: 2, fm: 3.5, idx: 3.5, det: 0 }))],
+    ['Bombo', '#FF5A6E', (t) => [0, 0.5, 1].forEach((st) => { const c = audio(), o = c.createOscillator(), g = c.createGain(); o.frequency.setValueAtTime(180, t + st); o.frequency.exponentialRampToValueAtTime(45, t + st + 0.08); g.gain.setValueAtTime(0.9, t + st); g.gain.setTargetAtTime(0, t + st, 0.12); o.connect(g); g.connect(out); o.start(t + st); o.stop(t + st + 0.8); })],
+    ['Redoblante y hi-hat', '#B6FF3B', (t) => { const c = audio(), b = c.createBuffer(1, c.sampleRate, c.sampleRate), x = b.getChannelData(0); for (let i = 0; i < x.length; i++) x[i] = Math.random() * 2 - 1; [0, 0.15, 0.3, 0.45, 0.6, 0.75].forEach((st, i) => { const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(); s.buffer = b; f.type = 'highpass'; f.frequency.value = i % 4 === 2 ? 1500 : 7000; g.gain.setValueAtTime(0.5, t + st); g.gain.setTargetAtTime(0, t + st, i % 4 === 2 ? 0.06 : 0.02); s.connect(f); f.connect(g); g.connect(out); s.start(t + st); s.stop(t + st + 0.4); }); }],
+    ['Growl wavetable', '#FF4FD8', (t) => { const v = note(36, t, 1.4, { cut: 400, env: 0, q: 10, s: 1, det: 10 }); for (let i = 0; i < 14; i++) v.f.frequency.setTargetAtTime(i % 2 ? 300 : 2400, t + i * 0.1, 0.03); }],
+    ['E-piano FM', '#FFB23E', (t) => [57, 64, 60, 67].forEach((n, i) => note(n, t + i * 0.4, 0.35, { wave: 'sine', cut: 15000, env: 0, q: 0.5, d: 1.5, s: 0.15, r: 0.5, fm: 1, idx: 3, det: 3 }))],
+  ];
+  const chips = document.getElementById('chips');
+  R.forEach(([n, c, fn]) => { const b = document.createElement('button'); b.className = 'chip'; b.style.setProperty('--c', c); b.textContent = '▶ ' + n; b.onclick = () => { fn(audio().currentTime + 0.05); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 1400); }; chips.append(b); });
+})();
+</script>
+</body>
+</html>
