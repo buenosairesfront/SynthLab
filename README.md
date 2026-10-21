@@ -12,7 +12,7 @@ App para Android y para el navegador · código abierto · sin dependencias</p>
 <p align="center">
   <a href="https://buenosairesfront.github.io/SynthLab/"><b>🌐 Landing page</b></a> ·
   <a href="https://buenosairesfront.github.io/SynthLab/app/"><b>▶ Probar en el navegador</b></a> ·
-  <a href="https://buenosairesfront.github.io/SynthLab/SynthLab.apk"><b>⬇ Descargar APK</b></a>
+  <a href="https://github.com/buenosairesfront/SynthLab/raw/main/docs/SynthLab.apk"><b>⬇ Descargar APK</b></a>
 </p>
 
 ---
@@ -57,7 +57,7 @@ Polifónico (14 voces), sobre Web Audio API:
 
 ## 📱 Instalar en Android
 
-1. Desde el celular, descargá [`SynthLab.apk`](https://buenosairesfront.github.io/SynthLab/SynthLab.apk) (o bajalo de la sección *Releases*).
+1. Desde el celular, descargá [`SynthLab.apk`](https://github.com/buenosairesfront/SynthLab/raw/main/docs/SynthLab.apk) (descarga directa desde GitHub).
 2. Abrilo desde la notificación de descarga o desde **Archivos → Descargas**.
 3. Si Android lo pide, permití **instalar apps de esta fuente**.
 4. Tocá **Instalar**. Si aparece Play Protect: **Más detalles → Instalar de todas formas** (sale porque la app no viene de la Play Store).
@@ -108,7 +108,7 @@ Necesita Java 17+, Node/npm, Python 3, `curl` y `zip`. La primera vez descarga e
 
 1. Subí el repo a GitHub (por ejemplo, con el nombre `SynthLab`).
 2. Andá a **Settings → Pages**.
-3. En **Source** elegí **Deploy from a branch**; en **Branch**, `main` y la carpeta **`/docs`**. Guardá.
+3. En **Source** elegí **GitHub Actions**. El workflow `.github/workflows/pages.yml` publica la carpeta `docs/` en cada push a `main` (también se puede correr a mano desde la pestaña **Actions**).
 4. En uno o dos minutos queda online en `https://buenosairesfront.github.io/SynthLab/`:
    - `/` → landing page
    - `/app/` → la app en el navegador
