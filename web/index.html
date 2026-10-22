@@ -4,11 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0B0B14">
+<meta name="description" content="SynthLab: un acercamiento breve y visual a la síntesis de sonido, en el navegador.">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icons/icon-192.png">
+<link rel="apple-touch-icon" href="../icons/icon-192.png">
 <title>SynthLab</title>
 <style>
 :root{--bg:#0B0B14;--panel:#151527;--panel2:#1c1c33;--line:#26264a;--text:#EDEBFF;--dim:#8C89B5;--pink:#FF4FD8;--cyan:#3EF0FF;--lime:#B6FF3B;--orange:#FFB23E;--violet:#8A7DFF;--red:#FF5A6E}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Roboto,sans-serif;overscroll-behavior:none;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","PingFang SC","Hiragino Sans","Noto Sans Devanagari",sans-serif;overscroll-behavior:none;user-select:none;-webkit-user-select:none}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 #app{position:fixed;inset:0;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 .top{height:52px;flex:none;display:flex;align-items:center;gap:6px;padding:0 10px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#121224,#0B0B14)}
@@ -16,6 +20,11 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .title{flex:1;font-weight:700;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .xp{font-size:12px;font-weight:800;padding:5px 10px;border-radius:20px;background:#2a1d3d;color:var(--pink);border:1px solid #4a2a66}
 .xp.pop{animation:pop .5s}
+.lang{max-width:96px;padding:5px 6px;border-radius:10px;background:#1c1c33;color:var(--text);border:1px solid var(--line);font:inherit;font-size:12px}
+.inst{padding:5px 10px;font-size:12px;border-color:var(--cyan);color:var(--cyan)}
+.inst[hidden]{display:none}
+.gh{display:flex;align-items:center;justify-content:center;gap:8px;margin:26px auto 6px;padding:10px 16px;border-radius:12px;border:1px solid var(--line);color:var(--dim);text-decoration:none;font-weight:600;width:max-content}
+.gh:hover{color:var(--text)}
 @keyframes pop{40%{transform:scale(1.3);box-shadow:0 0 18px var(--pink)}}
 .view{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 14px 24px}
 .view.fixed{overflow:hidden;padding:0;display:flex;flex-direction:column}
@@ -46,7 +55,7 @@ h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)
 .hero-cv{position:absolute;inset:0;width:100%;height:100%}
 .hero-t{position:absolute;left:16px;right:16px;bottom:14px}
 .hero h1{margin:0;font-size:30px;letter-spacing:-.02em;text-shadow:0 0 20px #ff4fd8aa}
-.hero p{margin:2px 0 8px;color:var(--dim);font-size:13px}
+.hero p{margin:2px 0 8px;color:#c9c6ee;font-size:13px;text-shadow:0 1px 6px #000,0 0 12px #000}
 .bar{height:6px;border-radius:4px;background:#ffffff14;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--pink))}
 .cta{width:100%;text-align:left;margin-top:12px;padding:14px 44px 14px 16px;border-radius:16px;background:linear-gradient(135deg,color-mix(in srgb,var(--c) 28%,transparent),var(--panel));border:1px solid color-mix(in srgb,var(--c) 50%,transparent);font-weight:700;font-size:16px;position:relative;display:block}
 .cta small{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--c);font-weight:700}
@@ -157,6 +166,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 </head>
 <body>
 <div id="app"></div>
+<script src="lang/es.js"></script>
+<script src="lang/en.js"></script>
+<script src="lang/de.js"></script>
+<script src="lang/zh.js"></script>
+<script src="lang/ja.js"></script>
+<script src="lang/hi.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/content.js"></script>

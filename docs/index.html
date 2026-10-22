@@ -3,19 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>SynthLab — Aprendé síntesis viendo y escuchando</title>
-<meta name="description" content="App gratuita para aprender síntesis de sonido: osciladores, filtros, envolventes, LFO, FM, wavetable y aditiva, con visualizaciones en vivo, recetas de sonidos, laboratorio experimental y retos de oído.">
+<title>SynthLab — Conocé la síntesis viendo y escuchando</title>
+<meta name="description" content="Un acercamiento breve y visual a la síntesis de sonido: osciladores, filtros, envolventes, LFO, FM, wavetable y aditiva. Funciona en el navegador, sin descargas.">
 <meta name="theme-color" content="#0B0B14">
-<meta property="og:title" content="SynthLab — Aprendé síntesis viendo y escuchando">
-<meta property="og:description" content="24 lecciones interactivas, 10 recetas de sonidos, un sintetizador completo, laboratorio experimental y entrenamiento de oído.">
+<meta property="og:title" content="SynthLab — Conocé la síntesis viendo y escuchando">
+<meta property="og:description" content="Un acercamiento breve y visual a la síntesis de sonido, en el navegador y sin descargas.">
 <meta property="og:image" content="img/filter.jpg">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 108'%3E%3Crect width='108' height='108' rx='24' fill='%230B0B14'/%3E%3Cpath d='M18,54 C26,26 34,26 40,54 S54,82 60,54 L68,30 L68,78 L76,54 L90,54' fill='none' stroke='%23FF4FD8' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
 :root{--bg:#0B0B14;--panel:#151527;--line:#26264a;--text:#EDEBFF;--dim:#8C89B5;--pink:#FF4FD8;--cyan:#3EF0FF;--lime:#B6FF3B;--orange:#FFB23E;--violet:#8A7DFF;--red:#FF5A6E}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","PingFang SC","Hiragino Sans","Noto Sans Devanagari",sans-serif;overflow-x:hidden}
 a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
 .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
 nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:#0b0b14b8;border-bottom:1px solid #ffffff0d}
 nav.top .wrap{display:flex;align-items:center;gap:14px;height:60px}
@@ -24,37 +27,44 @@ nav.top .wrap{display:flex;align-items:center;gap:14px;height:60px}
 nav.top .sp{flex:1}
 nav.top a.l{font-size:14px;color:var(--dim);text-decoration:none}
 nav.top a.l:hover{color:var(--text)}
-@media(max-width:640px){nav.top a.l.hide{display:none}}
+.lang{padding:6px 8px;border-radius:10px;background:#1c1c33;color:var(--text);border:1px solid var(--line);font:inherit;font-size:13px}
+@media(max-width:700px){nav.top a.l{display:none}}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 22px;border-radius:14px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:#1c1c33;transition:transform .15s,box-shadow .2s}
 .btn:hover{transform:translateY(-2px)}
 .btn.pri{background:linear-gradient(135deg,var(--pink),var(--violet));border:0;color:#fff;box-shadow:0 8px 30px #ff4fd855}
 .btn.pri:hover{box-shadow:0 10px 40px #ff4fd899}
-.btn svg{width:20px;height:20px}
+.btn svg{width:20px;height:20px;flex:none}
 .btn.sm{padding:8px 14px;font-size:14px;border-radius:10px}
 /* hero */
 .hero{user-select:none;-webkit-user-select:none;position:relative;min-height:min(92vh,820px);display:flex;align-items:center;overflow:hidden;border-bottom:1px solid var(--line);background:radial-gradient(70% 60% at 70% 30%,#2a145088,transparent),radial-gradient(60% 50% at 10% 80%,#0f3a4a55,transparent)}
 #wave{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
 .hero .wrap{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;pointer-events:none;padding-top:40px;padding-bottom:40px}
 .hero .wrap>*{pointer-events:auto}
+.hero .wrap>div:first-child{pointer-events:none}
+.hero .wrap>div:first-child .ctas,.hero .wrap>div:first-child .lang{pointer-events:auto}
 .tag{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);border:1px solid #3ef0ff55;padding:5px 12px;border-radius:30px;background:#3ef0ff11}
-h1{font-size:clamp(44px,7.5vw,88px);line-height:.98;margin:18px 0 16px;letter-spacing:-.035em}
+h1{font-size:clamp(42px,7vw,84px);line-height:1;margin:18px 0 16px;letter-spacing:-.035em}
 h1 em{font-style:normal;background:linear-gradient(90deg,var(--cyan),var(--pink) 60%,var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 30px #ff4fd855)}
-.lead{font-size:19px;color:#c9c6ee;max-width:560px;margin:0 0 28px}
+.lead{font-size:19px;color:#c9c6ee;max-width:580px;margin:0 0 26px}
 .ctas{display:flex;flex-wrap:wrap;gap:12px}
-.hint{margin-top:18px;font-size:13px;color:var(--dim);display:flex;align-items:center;gap:8px}
+.nodl{display:flex;align-items:center;gap:10px;margin-top:18px;font-size:15px;color:var(--lime);font-weight:600}
+.nodl svg{width:20px;height:20px;flex:none}
+.hint{margin-top:10px;font-size:13px;color:var(--dim);display:flex;align-items:center;gap:8px}
 .hint i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:bl 1.4s infinite}
 @keyframes bl{50%{opacity:.2}}
+.toast{margin-top:14px;max-width:560px;font-size:14px;color:var(--text);background:#1c1c33;border:1px solid var(--cyan);border-radius:12px;padding:12px 14px;display:none}
+.toast.on{display:block}
 .phone{position:relative;width:min(320px,80vw);aspect-ratio:585/1266;margin:0 auto;border-radius:44px;padding:10px;background:linear-gradient(160deg,#2b2b4a,#0c0c18);box-shadow:0 30px 80px #000c,0 0 0 1px #ffffff14,0 0 80px #ff4fd833}
 .phone .scr{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:#000}
 .phone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
 .phone img.on{opacity:1}
 .phone:before{content:'';position:absolute;top:18px;left:50%;transform:translateX(-50%);width:80px;height:20px;border-radius:12px;background:#000;z-index:2}
-@media(max-width:860px){.hero .wrap{grid-template-columns:1fr;text-align:left}.phone{width:min(270px,70vw)}}
+@media(max-width:860px){.hero .wrap{grid-template-columns:1fr}.phone{width:min(270px,70vw)}}
 /* sections */
 section{padding:90px 0;position:relative}
-h2{font-size:clamp(30px,4.4vw,48px);line-height:1.08;margin:0 0 14px;letter-spacing:-.025em}
+h2{font-size:clamp(30px,4.4vw,48px);line-height:1.1;margin:0 0 14px;letter-spacing:-.025em}
 .kicker{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--pink);margin-bottom:10px}
-.sub{color:var(--dim);font-size:18px;max-width:640px;margin:0 0 40px}
+.sub{color:var(--dim);font-size:18px;max-width:680px;margin:0 0 40px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:-50px;position:relative;z-index:3}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;text-align:center}
 .stat b{display:block;font-size:40px;line-height:1;background:linear-gradient(135deg,var(--cyan),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
@@ -82,7 +92,7 @@ h2{font-size:clamp(30px,4.4vw,48px);line-height:1.08;margin:0 0 14px;letter-spac
 .strip img:hover{transform:translateY(-6px) rotate(-1deg)}
 .strip figcaption{font-size:13px;color:var(--dim);margin-top:10px}
 .chips{display:flex;flex-wrap:wrap;gap:10px}
-.chip{padding:10px 16px;border-radius:30px;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);background:color-mix(in srgb,var(--c) 12%,transparent);color:var(--c);font-weight:700;font-size:14px;cursor:pointer;transition:.2s}
+.chip{padding:10px 16px;border-radius:30px;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);background:color-mix(in srgb,var(--c) 12%,transparent);color:var(--c);font-weight:700;font-size:14px;transition:.2s}
 .chip:hover,.chip.on{background:var(--c);color:#111;box-shadow:0 0 20px color-mix(in srgb,var(--c) 70%,transparent)}
 .steps{counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .step{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;position:relative}
@@ -105,115 +115,110 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between}
 <nav class="top"><div class="wrap">
   <a class="brand" href="#"><svg viewBox="0 0 108 108"><path d="M18,54 C26,26 34,26 40,54 S54,82 60,54 L68,30 L68,78 L76,54 L90,54" fill="none" stroke="#FF4FD8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M18,74 L90,74" stroke="#3EF0FF" stroke-width="4" stroke-linecap="round"/></svg>SynthLab</a>
   <span class="sp"></span>
-  <a class="l hide" href="#aprender">Contenido</a>
-  <a class="l hide" href="#instalar">Instalar</a>
-  <a class="l gh" href="#" target="_blank" rel="noopener">GitHub</a>
-  <a class="btn sm pri" href="SynthLab.apk" download>Descargar</a>
+  <a class="l" href="#recorrido" data-i18n="navContent">Contenido</a>
+  <a class="l" href="#usar" data-i18n="navHow">Cómo usarla</a>
+  <a class="l gh" href="https://github.com/buenosairesfront/SynthLab" target="_blank" rel="noopener">GitHub</a>
+  <select class="lang" id="lang" aria-label="Idioma / Language"></select>
+  <a class="btn sm pri" href="app/" data-i18n="navOpen">Abrir</a>
 </div></nav>
 
 <header class="hero">
-  <canvas id="wave" aria-label="Sintetizador interactivo: tocá y arrastrá"></canvas>
+  <canvas id="wave" aria-label="Synth"></canvas>
   <div class="wrap">
     <div>
-      <span class="tag">App gratis · Android + web</span>
-      <h1>Aprendé síntesis <em>viendo y escuchando</em></h1>
-      <p class="lead">Osciladores, filtros, envolventes, LFO, FM, wavetable y aditiva. Cada concepto con su sonido y su gráfico en vivo: movés una perilla y ves lo que escuchás.</p>
+      <span class="tag" data-i18n="tag">Web app · sin descargas</span>
+      <h1 data-i18n-html="h1">Conocé la síntesis <em>viendo y escuchando</em></h1>
+      <p class="lead" data-i18n="lead"></p>
       <div class="ctas">
-        <a class="btn pri" href="SynthLab.apk" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M6 11l6 6 6-6M4 21h16"/></svg>Descargar para Android</a>
-        <a class="btn" href="app/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Probar en el navegador</a>
+        <a class="btn pri" href="app/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="ctaOpen">Abrir SynthLab</span></a>
+        <button class="btn install"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M12 7v5M9.5 9.5 12 12l2.5-2.5"/></svg><span data-i18n="ctaInstall">Instalar en la computadora</span></button>
+        <a class="btn gh" href="https://github.com/buenosairesfront/SynthLab" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span data-i18n="ctaGithub">Ver en GitHub</span></a>
       </div>
-      <div class="hint"><i></i>Tocá y arrastrá el fondo: es un sintetizador.</div>
+      <div class="toast" id="installHelp" data-i18n="installNoPrompt"></div>
+      <div class="nodl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="noDownload"></span></div>
+      <div class="hint"><i></i><span data-i18n="hint"></span></div>
     </div>
     <div class="phone"><div class="scr" id="phone">
-      <img class="on" src="img/filter.jpg" alt="Lección de resonancia con curva de filtro sobre el espectro">
-      <img src="img/wavetable.jpg" alt="Wavetable en 3D">
-      <img src="img/adsr.jpg" alt="Editor de envolvente ADSR">
-      <img src="img/fm.jpg" alt="Bandas laterales de síntesis FM">
-      <img src="img/chaos.jpg" alt="Secuenciador del caos">
+      <img class="on" src="img/filter.jpg" alt="">
+      <img src="img/wavetable.jpg" alt="">
+      <img src="img/adsr.jpg" alt="">
+      <img src="img/fm.jpg" alt="">
+      <img src="img/chaos.jpg" alt="">
     </div></div>
   </div>
 </header>
 
 <div class="wrap">
   <div class="stats reveal">
-    <div class="stat"><b>24</b><span>lecciones interactivas</span></div>
-    <div class="stat"><b>10</b><span>recetas de sonidos</span></div>
-    <div class="stat"><b>6</b><span>experimentos de laboratorio</span></div>
-    <div class="stat"><b>24</b><span>retos de oído</span></div>
+    <div class="stat"><b>24</b><span data-i18n="stat1"></span></div>
+    <div class="stat"><b>10</b><span data-i18n="stat2"></span></div>
+    <div class="stat"><b>6</b><span data-i18n="stat3"></span></div>
+    <div class="stat"><b>24</b><span data-i18n="stat4"></span></div>
   </div>
 </div>
 
-<section id="como">
+<section>
   <div class="wrap">
-    <div class="kicker">Cuatro formas de aprender</div>
-    <h2 class="reveal">Leé, tocá, experimentá, entrená el oído.</h2>
-    <p class="sub reveal">Nada de teoría seca: cada pantalla tiene un sonido que podés tocar y un gráfico que reacciona.</p>
+    <div class="kicker" data-i18n="modesKicker"></div>
+    <h2 class="reveal" data-i18n="modesH"></h2>
+    <p class="sub reveal" data-i18n="modesSub"></p>
     <div class="modes">
-      <div class="mode reveal" style="--c:var(--cyan)"><img src="img/home.jpg" alt="" loading="lazy"><div><h3>Aprender</h3><p>9 módulos con lecciones cortas. Cada una tiene un visualizador en vivo, controles y tareas que se marcan solas cuando las lográs.</p><ul><li>"Hacé un pluck: sustain 0 y decay corto"</li><li>"Hacé una campana: ratio no entero"</li></ul></div></div>
-      <div class="mode reveal" style="--c:var(--pink)"><img src="img/play.jpg" alt="" loading="lazy"><div><h3>Tocar</h3><p>Un sintetizador completo con secuenciador de 16 pasos.</p><ul><li>2 osciladores + unison de 7 voces</li><li>Filtro 12/24 dB, dos ADSR, LFO</li><li>FM, wavetable, aditiva, drive, bitcrush, delay, reverb</li></ul></div></div>
-      <div class="mode reveal" style="--c:var(--lime)"><img src="img/lissajous.jpg" alt="" loading="lazy"><div><h3>Laboratorio</h3><p>Experimentos para entender el sonido desde otros ángulos.</p><ul><li>Cuerda física Karplus-Strong</li><li>Lissajous y ring mod · Secuenciador del caos</li><li>Dibujá tu onda · Pad XY · Destructor</li></ul></div></div>
-      <div class="mode reveal" style="--c:var(--orange)"><img src="img/quiz.jpg" alt="" loading="lazy"><div><h3>Retos de oído</h3><p>¿Qué forma de onda es? ¿Qué filtro? ¿Vibrato o trémolo? Y los desafíos "igualá el sonido": escuchás un objetivo y lo reproducís moviendo un control.</p></div></div>
+      <div class="mode reveal" style="--c:var(--cyan)"><img src="img/home.jpg" alt="" loading="lazy"><div><h3 data-i18n="m1t"></h3><p data-i18n="m1p"></p><ul><li data-i18n="m1a"></li><li data-i18n="m1b"></li></ul></div></div>
+      <div class="mode reveal" style="--c:var(--pink)"><img src="img/play.jpg" alt="" loading="lazy"><div><h3 data-i18n="m2t"></h3><p data-i18n="m2p"></p><ul><li data-i18n="m2a"></li><li data-i18n="m2b"></li><li data-i18n="m2c"></li></ul></div></div>
+      <div class="mode reveal" style="--c:var(--lime)"><img src="img/lissajous.jpg" alt="" loading="lazy"><div><h3 data-i18n="m3t"></h3><p data-i18n="m3p"></p><ul><li data-i18n="m3a"></li><li data-i18n="m3b"></li><li data-i18n="m3c"></li></ul></div></div>
+      <div class="mode reveal" style="--c:var(--orange)"><img src="img/quiz.jpg" alt="" loading="lazy"><div><h3 data-i18n="m4t"></h3><p data-i18n="m4p"></p></div></div>
     </div>
   </div>
 </section>
 
-<section id="aprender" style="background:linear-gradient(180deg,transparent,#11112288,transparent)">
+<section id="recorrido" style="background:linear-gradient(180deg,transparent,#11112288,transparent)">
   <div class="wrap">
-    <div class="kicker">El temario</div>
-    <h2 class="reveal">De "¿qué es una onda?" a la síntesis FM.</h2>
-    <p class="sub reveal">Pensado para quien ya escuchó hablar de osciladores y filtros y quiere entenderlos de verdad.</p>
+    <div class="kicker" data-i18n="sylKicker"></div>
+    <h2 class="reveal" data-i18n="sylH"></h2>
+    <p class="sub reveal" data-i18n="sylSub"></p>
     <div class="mods" id="mods"></div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="kicker">Galería</div>
-    <h2 class="reveal">Hiper visual, por diseño.</h2>
-    <div class="strip">
-      <figure><img src="img/filter.jpg" alt="" loading="lazy"><figcaption>Curva del filtro sobre el espectro, arrastrable</figcaption></figure>
-      <figure><img src="img/wavetable.jpg" alt="" loading="lazy"><figcaption>Wavetable en 3D con el cuadro actual</figcaption></figure>
-      <figure><img src="img/adsr.jpg" alt="" loading="lazy"><figcaption>ADSR editable con la nota en vivo</figcaption></figure>
-      <figure><img src="img/fm.jpg" alt="" loading="lazy"><figcaption>Bandas laterales FM (Bessel) en tiempo real</figcaption></figure>
-      <figure><img src="img/additive.jpg" alt="" loading="lazy"><figcaption>Aditiva: dibujá los armónicos</figcaption></figure>
-      <figure><img src="img/chaos.jpg" alt="" loading="lazy"><figcaption>El mapa logístico tocando música</figcaption></figure>
-      <figure><img src="img/lissajous.jpg" alt="" loading="lazy"><figcaption>Figuras de Lissajous en estéreo</figcaption></figure>
-    </div>
+    <div class="kicker" data-i18n="galKicker"></div>
+    <h2 class="reveal" data-i18n="galH"></h2>
+    <div class="strip" id="strip"></div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="kicker">Recetas</div>
-    <h2 class="reveal">Diez sonidos clásicos, paso a paso.</h2>
-    <p class="sub reveal">Arrancás con un oscilador pelado y cada paso agrega una pieza mientras lo escuchás. Tocá una receta para oír una muestra.</p>
+    <div class="kicker" data-i18n="rcpKicker"></div>
+    <h2 class="reveal" data-i18n="rcpH"></h2>
+    <p class="sub reveal" data-i18n="rcpSub"></p>
     <div class="chips" id="chips"></div>
   </div>
 </section>
 
-<section id="instalar">
+<section id="usar">
   <div class="wrap">
-    <div class="kicker">Instalar en Android</div>
-    <h2 class="reveal">Cuatro toques y listo.</h2>
-    <p class="sub reveal">SynthLab no está en la Play Store: se instala directo desde el archivo APK. Funciona sin internet y pesa menos de 100 KB.</p>
+    <div class="kicker" data-i18n="useKicker"></div>
+    <h2 class="reveal" data-i18n="useH"></h2>
+    <p class="sub reveal" data-i18n="useSub"></p>
     <div class="steps">
-      <div class="step reveal"><b>Descargá el APK</b><p>Desde el celular, tocá <a href="SynthLab.apk" download>Descargar</a>.</p></div>
-      <div class="step reveal"><b>Abrí el archivo</b><p>Desde la notificación de descarga o desde Archivos → Descargas.</p></div>
-      <div class="step reveal"><b>Permití la instalación</b><p>Android te pide permitir apps de esta fuente: Configuración → activar → volver.</p></div>
-      <div class="step reveal"><b>Instalá</b><p>Si Play Protect avisa, tocá "Más detalles" → "Instalar de todas formas".</p></div>
+      <div class="step reveal"><b data-i18n="s1t"></b><p data-i18n="s1p"></p></div>
+      <div class="step reveal"><b data-i18n="s2t"></b><p data-i18n="s2p"></p></div>
+      <div class="step reveal"><b data-i18n="s3t"></b><p data-i18n="s3p"></p></div>
+      <div class="step reveal"><b data-i18n="s4t"></b><p data-i18n="s4p"></p></div>
     </div>
-    <p class="sub" style="margin-top:28px">¿Tenés iPhone o compu? Usá la <a href="app/">versión web</a>: es la misma app, en el navegador.</p>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="kicker">Por dentro</div>
-    <h2 class="reveal">Hecha con Web Audio, sin dependencias.</h2>
+    <div class="kicker" data-i18n="techKicker"></div>
+    <h2 class="reveal" data-i18n="techH"></h2>
     <div class="tech">
-      <div class="reveal"><b>Motor de síntesis propio</b>Polifónico, sobre Web Audio API: osciladores con unison, filtros en cascada, envolventes, LFO, FM, wavetables generadas por Fourier.</div>
-      <div class="reveal"><b>Visualizaciones en Canvas</b>Osciloscopio con disparo, espectro logarítmico, respuesta real del filtro, ADSR con la nota en vivo, vistas 3D.</div>
-      <div class="reveal"><b>Código abierto</b>JavaScript puro, cero librerías. El APK se compila con un script, sin Android Studio.</div>
+      <div class="reveal"><b data-i18n="t1t"></b><span data-i18n="t1p"></span></div>
+      <div class="reveal"><b data-i18n="t2t"></b><span data-i18n="t2p"></span></div>
+      <div class="reveal"><b data-i18n="t3t"></b><span data-i18n="t3p"></span></div>
     </div>
   </div>
 </section>
@@ -221,40 +226,68 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between}
 <section>
   <div class="wrap">
     <div class="cta-final reveal">
-      <h2>Empezá a sintetizar.</h2>
-      <p class="sub" style="margin:0 auto 28px">Gratis, sin anuncios, sin cuentas.</p>
+      <h2 data-i18n="finalH"></h2>
+      <p class="sub" style="margin:0 auto 28px" data-i18n="finalSub"></p>
       <div class="ctas">
-        <a class="btn pri" href="SynthLab.apk" download>Descargar para Android</a>
-        <a class="btn" href="app/">Probar en el navegador</a>
+        <a class="btn pri" href="app/" data-i18n="ctaOpen"></a>
+        <button class="btn install" data-i18n="ctaInstall"></button>
+        <a class="btn gh" href="https://github.com/buenosairesfront/SynthLab" target="_blank" rel="noopener" data-i18n="ctaGithub"></a>
       </div>
     </div>
   </div>
 </section>
 
-<footer><div class="wrap"><span>SynthLab · código abierto (licencia MIT)</span><span><a class="gh" href="#" target="_blank" rel="noopener">Ver el código en GitHub</a></span></div></footer>
+<footer><div class="wrap"><span data-i18n="footer"></span><span><a class="gh" href="https://github.com/buenosairesfront/SynthLab" target="_blank" rel="noopener" data-i18n="footerGh"></a></span></div></footer>
 
+<script src="landing-i18n.js"></script>
 <script>
 (() => {
-  // GitHub link inferred from the Pages URL (user.github.io/repo)
-  const m = location.hostname.match(/^([^.]+)\.github\.io$/);
-  const repo = location.pathname.split('/').filter(Boolean)[0];
-  document.querySelectorAll('a.gh').forEach((a) => { if (m) a.href = `https://github.com/${m[1]}/${repo || m[1] + '.github.io'}`; else a.style.display = 'none'; });
+  const D = window.LANDING_I18N;
+  const LANGS = ['es', 'en', 'de', 'zh', 'ja', 'hi'];
+  // same saved choice as the app (synthlab.lang), else the browser language
+  let lang = (() => {
+    try { const s = localStorage.getItem('synthlab.lang'); if (D[s]) return s; } catch (e) {}
+    for (const x of navigator.languages || [navigator.language || 'en']) { const k = String(x).slice(0, 2).toLowerCase(); if (D[k]) return k; }
+    return 'en';
+  })();
+  const T = (k) => (D[lang][k] != null ? D[lang][k] : D.es[k]);
+  const COLS = ['#3EF0FF', '#FF4FD8', '#B6FF3B', '#FFB23E', '#8A7DFF', '#3EF0FF', '#FFB23E', '#FF4FD8', '#B6FF3B'];
+  const NLES = [2, 4, 4, 3, 2, 2, 3, 2, 2];
+  const SHOTS = ['filter', 'wavetable', 'adsr', 'fm', 'additive', 'chaos', 'lissajous'];
+  const sel = document.getElementById('lang');
+  LANGS.forEach((k) => { const o = document.createElement('option'); o.value = k; o.textContent = D[k]._name; sel.append(o); });
+  sel.onchange = () => { lang = sel.value; try { localStorage.setItem('synthlab.lang', lang); } catch (e) {} apply(); };
+
+  const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { threshold: 0.12 });
+  const wp = (i) => { let d = ''; for (let x = 0; x <= 70; x++) { const t = (x / 70) * Math.PI * 4; const y = [Math.sin(t), Math.sin(t) + Math.sin(3 * t) / 3, ((t / Math.PI) % 2) - 1][i % 3]; d += (x ? 'L' : 'M') + x + ',' + (14 - y * 10).toFixed(1); } return d; };
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  function apply() {
+    sel.value = lang;
+    document.documentElement.lang = lang;
+    document.title = T('title');
+    document.querySelector('meta[name=description]').content = T('metaDesc');
+    document.querySelectorAll('[data-i18n]').forEach((el) => (el.textContent = T(el.dataset.i18n)));
+    document.querySelectorAll('[data-i18n-html]').forEach((el) => (el.innerHTML = T(el.dataset.i18nHtml)));
+    document.getElementById('mods').innerHTML = T('mods').map(([t, s], i) => `<div class="mod reveal in" style="--c:${COLS[i]}"><svg viewBox="0 0 70 28"><path d="${wp(i)}" fill="none" stroke="${COLS[i]}" stroke-width="2"/></svg><small>${i + 1} · ${NLES[i]} ${esc(T('lessons'))}</small><b>${esc(t)}</b><span>${esc(s)}</span></div>`).join('');
+    document.getElementById('strip').innerHTML = SHOTS.map((s, i) => `<figure><img src="img/${s}.jpg" alt="" loading="lazy"><figcaption>${esc(T('cap')[i])}</figcaption></figure>`).join('');
+    renderChips();
+  }
+
+  // ---------- install as a desktop app (PWA) ----------
+  let installEvt = null;
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; });
+  document.querySelectorAll('.install').forEach((b) => b.addEventListener('click', async () => {
+    if (installEvt) { installEvt.prompt(); await installEvt.userChoice; installEvt = null; }
+    else { const h = document.getElementById('installHelp'); h.classList.add('on'); h.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }));
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 
   // phone slideshow
   const imgs = [...document.querySelectorAll('#phone img')]; let k = 0;
   setInterval(() => { imgs[k].classList.remove('on'); k = (k + 1) % imgs.length; imgs[k].classList.add('on'); }, 2800);
 
-  // reveal on scroll
-  const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
-
-  // modules
-  const MODS = [['Fundamentos del sonido', 'Onda, frecuencia, timbre y armónicos', '#3EF0FF', 2], ['Osciladores', 'Formas de onda, pulso, detune, unison y ruido', '#FF4FD8', 4], ['Filtros', 'Cutoff, resonancia, tipos y pendientes', '#B6FF3B', 4], ['Envolventes', 'ADSR de volumen, de filtro y de pitch', '#FFB23E', 3], ['LFO y modulación', 'Vibrato, trémolo, wah y S&H', '#8A7DFF', 2], ['Síntesis aditiva', 'Construir sonidos sumando senos', '#3EF0FF', 2], ['Síntesis FM', 'Portadora, moduladora, ratio e índice', '#FFB23E', 3], ['Wavetable', 'Tablas de ondas y morphing', '#FF4FD8', 2], ['Efectos', 'Saturación, bitcrush, delay y reverb', '#B6FF3B', 2]];
-  const wp = (i) => { let d = ''; for (let x = 0; x <= 70; x++) { const t = (x / 70) * Math.PI * 4; const y = [Math.sin(t), Math.sin(t) + Math.sin(3 * t) / 3, ((t / Math.PI) % 2) - 1][i % 3]; d += (x ? 'L' : 'M') + x + ',' + (14 - y * 10).toFixed(1); } return d; };
-  document.getElementById('mods').innerHTML = MODS.map(([t, s, c, n], i) => `<div class="mod reveal" style="--c:${c}"><svg viewBox="0 0 70 28"><path d="${wp(i)}" fill="none" stroke="${c}" stroke-width="2"/></svg><small>MÓDULO ${i + 1} · ${n} LECCIONES</small><b>${t}</b><span>${s}</span></div>`).join('');
-  document.querySelectorAll('#mods .reveal').forEach((el) => io.observe(el));
-
-  // ---------- tiny synth for the hero + recipe chips ----------
+  // ---------- tiny synth for the hero + recipe previews ----------
   let ac, out, ana, buf;
   const audio = () => {
     if (!ac) {
@@ -302,15 +335,13 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between}
   });
   const up = () => { if (!live) return; const t = ac.currentTime; live.g.gain.cancelScheduledValues(t); live.g.gain.setTargetAtTime(0, t, 0.12); live.oscs.forEach((o) => o.stop(t + 1)); live = null; };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-
   function draw() {
     const d = Math.min(devicePixelRatio || 1, 2), w = Math.round(cv.clientWidth * d), h = Math.round(cv.clientHeight * d);
     if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
     g2.clearRect(0, 0, w, h); tt += 0.01;
     let energy = 0;
     if (ana) { ana.getFloatTimeDomainData(buf); for (let i = 0; i < 2048; i += 8) energy = Math.max(energy, Math.abs(buf[i])); }
-    const cols = ['#FF4FD8', '#3EF0FF', '#8A7DFF', '#B6FF3B'];
-    cols.forEach((c, k) => {
+    ['#FF4FD8', '#3EF0FF', '#8A7DFF', '#B6FF3B'].forEach((c, k) => {
       g2.beginPath();
       for (let i = 0; i <= 240; i++) {
         const x = i / 240, env = Math.pow(Math.sin(Math.PI * x), 1.5);
@@ -325,21 +356,26 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between}
   }
   draw();
 
-  // recipe previews
   const R = [
-    ['Bajo ácido 303', '#B6FF3B', (t) => [36, 36, 48, 36, 39, 36, 46, 43].forEach((n, i) => note(n, t + i * 0.14, 0.1, { cut: 250, q: 18, env: 3500, d: 0.18, s: 0.4, r: 0.05 }))],
-    ['Pad cálido', '#8A7DFF', (t) => [48, 55, 58, 63].forEach((n) => note(n, t, 2.2, { cut: 1500, env: 0, a: 0.8, s: 0.9, r: 1.5, det: 14 }))],
-    ['Pluck', '#3EF0FF', (t) => [60, 63, 67, 70, 72, 70, 67, 63].forEach((n, i) => note(n, t + i * 0.16, 0.08, { wave: 'square', cut: 400, env: 4000, d: 0.12, s: 0, r: 0.2 }))],
-    ['Supersaw lead', '#FF4FD8', (t) => [72, 74, 75, 79].forEach((n, i) => note(n, t + i * 0.3, 0.27, { cut: 6000, env: 0, det: 25, s: 0.9 }))],
-    ['Bajo Reese', '#FFB23E', (t) => note(31, t, 1.6, { cut: 900, env: 300, det: 22, s: 1, d: 1, q: 2 })],
-    ['Campana FM', '#3EF0FF', (t) => [72, 79, 76].forEach((n, i) => note(n, t + i * 0.6, 0.1, { wave: 'sine', cut: 15000, env: 0, q: 0.5, d: 2.5, s: 0, r: 2, fm: 3.5, idx: 3.5, det: 0 }))],
-    ['Bombo', '#FF5A6E', (t) => [0, 0.5, 1].forEach((st) => { const c = audio(), o = c.createOscillator(), g = c.createGain(); o.frequency.setValueAtTime(180, t + st); o.frequency.exponentialRampToValueAtTime(45, t + st + 0.08); g.gain.setValueAtTime(0.9, t + st); g.gain.setTargetAtTime(0, t + st, 0.12); o.connect(g); g.connect(out); o.start(t + st); o.stop(t + st + 0.8); })],
-    ['Redoblante y hi-hat', '#B6FF3B', (t) => { const c = audio(), b = c.createBuffer(1, c.sampleRate, c.sampleRate), x = b.getChannelData(0); for (let i = 0; i < x.length; i++) x[i] = Math.random() * 2 - 1; [0, 0.15, 0.3, 0.45, 0.6, 0.75].forEach((st, i) => { const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(); s.buffer = b; f.type = 'highpass'; f.frequency.value = i % 4 === 2 ? 1500 : 7000; g.gain.setValueAtTime(0.5, t + st); g.gain.setTargetAtTime(0, t + st, i % 4 === 2 ? 0.06 : 0.02); s.connect(f); f.connect(g); g.connect(out); s.start(t + st); s.stop(t + st + 0.4); }); }],
-    ['Growl wavetable', '#FF4FD8', (t) => { const v = note(36, t, 1.4, { cut: 400, env: 0, q: 10, s: 1, det: 10 }); for (let i = 0; i < 14; i++) v.f.frequency.setTargetAtTime(i % 2 ? 300 : 2400, t + i * 0.1, 0.03); }],
-    ['E-piano FM', '#FFB23E', (t) => [57, 64, 60, 67].forEach((n, i) => note(n, t + i * 0.4, 0.35, { wave: 'sine', cut: 15000, env: 0, q: 0.5, d: 1.5, s: 0.15, r: 0.5, fm: 1, idx: 3, det: 3 }))],
+    ['#B6FF3B', (t) => [36, 36, 48, 36, 39, 36, 46, 43].forEach((n, i) => note(n, t + i * 0.14, 0.1, { cut: 250, q: 18, env: 3500, d: 0.18, s: 0.4, r: 0.05 }))],
+    ['#8A7DFF', (t) => [48, 55, 58, 63].forEach((n) => note(n, t, 2.2, { cut: 1500, env: 0, a: 0.8, s: 0.9, r: 1.5, det: 14 }))],
+    ['#3EF0FF', (t) => [60, 63, 67, 70, 72, 70, 67, 63].forEach((n, i) => note(n, t + i * 0.16, 0.08, { wave: 'square', cut: 400, env: 4000, d: 0.12, s: 0, r: 0.2 }))],
+    ['#FF4FD8', (t) => [72, 74, 75, 79].forEach((n, i) => note(n, t + i * 0.3, 0.27, { cut: 6000, env: 0, det: 25, s: 0.9 }))],
+    ['#FFB23E', (t) => note(31, t, 1.6, { cut: 900, env: 300, det: 22, s: 1, d: 1, q: 2 })],
+    ['#3EF0FF', (t) => [72, 79, 76].forEach((n, i) => note(n, t + i * 0.6, 0.1, { wave: 'sine', cut: 15000, env: 0, q: 0.5, d: 2.5, s: 0, r: 2, fm: 3.5, idx: 3.5, det: 0 }))],
+    ['#FF5A6E', (t) => [0, 0.5, 1].forEach((st) => { const c = audio(), o = c.createOscillator(), g = c.createGain(); o.frequency.setValueAtTime(180, t + st); o.frequency.exponentialRampToValueAtTime(45, t + st + 0.08); g.gain.setValueAtTime(0.9, t + st); g.gain.setTargetAtTime(0, t + st, 0.12); o.connect(g); g.connect(out); o.start(t + st); o.stop(t + st + 0.8); })],
+    ['#B6FF3B', (t) => { const c = audio(), b = c.createBuffer(1, c.sampleRate, c.sampleRate), x = b.getChannelData(0); for (let i = 0; i < x.length; i++) x[i] = Math.random() * 2 - 1; [0, 0.15, 0.3, 0.45, 0.6, 0.75].forEach((st, i) => { const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(); s.buffer = b; f.type = 'highpass'; f.frequency.value = i % 4 === 2 ? 1500 : 7000; g.gain.setValueAtTime(0.5, t + st); g.gain.setTargetAtTime(0, t + st, i % 4 === 2 ? 0.06 : 0.02); s.connect(f); f.connect(g); g.connect(out); s.start(t + st); s.stop(t + st + 0.4); }); }],
+    ['#FF4FD8', (t) => { const v = note(36, t, 1.4, { cut: 400, env: 0, q: 10, s: 1, det: 10 }); for (let i = 0; i < 14; i++) v.f.frequency.setTargetAtTime(i % 2 ? 300 : 2400, t + i * 0.1, 0.03); }],
+    ['#FFB23E', (t) => [57, 64, 60, 67].forEach((n, i) => note(n, t + i * 0.4, 0.35, { wave: 'sine', cut: 15000, env: 0, q: 0.5, d: 1.5, s: 0.15, r: 0.5, fm: 1, idx: 3, det: 3 }))],
   ];
-  const chips = document.getElementById('chips');
-  R.forEach(([n, c, fn]) => { const b = document.createElement('button'); b.className = 'chip'; b.style.setProperty('--c', c); b.textContent = '▶ ' + n; b.onclick = () => { fn(audio().currentTime + 0.05); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 1400); }; chips.append(b); });
+  function renderChips() {
+    const chips = document.getElementById('chips');
+    chips.innerHTML = '';
+    R.forEach(([c, fn], i) => { const b = document.createElement('button'); b.className = 'chip'; b.style.setProperty('--c', c); b.textContent = '▶ ' + T('rcp')[i]; b.onclick = () => { fn(audio().currentTime + 0.05); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 1400); }; chips.append(b); });
+  }
+
+  apply();
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 })();
 </script>
 </body>

@@ -48,60 +48,69 @@
   };
   const F = SL.fmt;
 
-  const WAVES = [['sine', 'Seno'], ['triangle', 'Triáng.'], ['sawtooth', 'Sierra'], ['square', 'Cuadr.'], ['pulse', 'Pulso']];
-  const WAVES_ALL = WAVES.concat([['wavetable', 'Wavetable'], ['additive', 'Aditiva']]);
-  const ENVF = (k, l) => ({ [k + '.a']: { l: l + ' Attack', min: 0.001, max: 5, log: 1, f: F.sec }, [k + '.d']: { l: l + ' Decay', min: 0.005, max: 5, log: 1, f: F.sec }, [k + '.s']: { l: l + ' Sustain', min: 0, max: 1, f: F.pct }, [k + '.r']: { l: l + ' Release', min: 0.005, max: 8, log: 1, f: F.sec } });
+  // option labels are keys under opt.* (or full keys like tables.vocal) in the language files
+  const WAVES = ['sine', 'triangle', 'sawtooth', 'square', 'pulse'].map((w) => [w, w]);
+  const WAVES_ALL = WAVES.concat([['wavetable', 'wavetable'], ['additive', 'additive']]);
+  const ENVF = (k) => ({ [k + '.a']: { min: 0.001, max: 5, log: 1, f: F.sec }, [k + '.d']: { min: 0.005, max: 5, log: 1, f: F.sec }, [k + '.s']: { min: 0, max: 1, f: F.pct }, [k + '.r']: { min: 0.005, max: 8, log: 1, f: F.sec } });
   SL.CT = Object.assign({
-    'osc1.wave': { l: 'Forma de onda', opts: WAVES }, 'osc1.waveAll': { k: 'osc1.wave', l: 'Forma de onda', opts: WAVES_ALL },
-    'osc1.oct': { l: 'Octava OSC 1', min: -2, max: 2, step: 1, f: (v) => (v > 0 ? '+' : '') + v },
-    'osc1.detune': { l: 'Afinación fina 1', min: -100, max: 100, step: 1, f: (v) => Math.round(v) + ' ct' },
-    'osc1.pw': { l: 'Ancho de pulso', min: 0.02, max: 0.98, step: 0.01, f: F.pct },
-    'osc1.level': { l: 'Nivel OSC 1', min: 0, max: 1, f: F.pct },
-    'osc2.wave': { l: 'Onda OSC 2', opts: WAVES }, 'osc2.waveAll': { k: 'osc2.wave', l: 'Onda OSC 2', opts: WAVES_ALL },
-    'osc2.oct': { l: 'Octava OSC 2', min: -2, max: 2, step: 1, f: (v) => (v > 0 ? '+' : '') + v },
-    'osc2.semi': { l: 'Semitonos OSC 2', min: -12, max: 12, step: 1, f: (v) => (v > 0 ? '+' : '') + v + ' st' },
-    'osc2.detune': { l: 'Detune OSC 2', min: -100, max: 100, step: 1, f: (v) => Math.round(v) + ' ct' },
-    'osc2.pw': { l: 'Ancho pulso 2', min: 0.02, max: 0.98, step: 0.01, f: F.pct },
-    'osc2.level': { l: 'Nivel OSC 2', min: 0, max: 1, f: F.pct },
-    noise: { l: 'Ruido', min: 0, max: 1, f: F.pct },
-    'uni.voices': { l: 'Voces unison', min: 1, max: 7, step: 1, f: (v) => v + 'x' },
-    'uni.detune': { l: 'Dispersión unison', min: 0, max: 100, step: 1, f: (v) => Math.round(v) + ' ct' },
-    'filter.type': { l: 'Tipo de filtro', opts: [['lowpass', 'Low-pass'], ['highpass', 'High-pass'], ['bandpass', 'Band-pass'], ['notch', 'Notch']] },
-    'filter.cutoff': { l: 'Cutoff', min: 20, max: 20000, log: 1, f: F.hz },
-    'filter.q': { l: 'Resonancia', min: 0.3, max: 30, log: 1, f: (v) => v.toFixed(1) },
-    'filter.slope': { l: 'Pendiente', opts: [[12, '12 dB/oct'], [24, '24 dB/oct']] },
-    'filter.env': { l: 'Env → cutoff', min: -1, max: 1, step: 0.01, f: F.bip },
-    'filter.key': { l: 'Keytracking', min: 0, max: 1, f: F.pct },
-    'penv.amt': { l: 'Pitch env', min: 0, max: 48, step: 1, f: (v) => v + ' st' },
-    'penv.decay': { l: 'Pitch decay', min: 0.005, max: 1, log: 1, f: F.sec },
-    'lfo.wave': { l: 'Forma LFO', opts: [['sine', 'Seno'], ['triangle', 'Triáng.'], ['square', 'Cuadr.'], ['sawtooth', 'Sierra'], ['sh', 'S&H']] },
-    'lfo.rate': { l: 'Velocidad LFO', min: 0.05, max: 40, log: 1, f: (v) => v.toFixed(2) + ' Hz' },
-    'lfo.depth': { l: 'Profundidad LFO', min: 0, max: 1, f: F.pct },
-    'lfo.target': { l: 'Destino LFO', opts: [['pitch', 'Pitch'], ['cutoff', 'Cutoff'], ['amp', 'Volumen'], ['pan', 'Paneo'], ['wt', 'Wavetable']] },
-    'fm.ratio': { l: 'Ratio moduladora', min: 0.25, max: 12, step: 0.01, snap: 1, f: (v) => v.toFixed(2) },
-    'fm.index': { l: 'Índice FM', min: 0, max: 20, step: 0.05, f: (v) => v.toFixed(2) },
-    'fm.env': { l: 'Env de índice', min: 0, max: 1, f: F.pct },
-    'fm.decay': { l: 'Decay de índice', min: 0.02, max: 4, log: 1, f: F.sec },
-    'wt.table': { l: 'Tabla', opts: Object.keys(SL.TABLES).map((k) => [k, SL.TABLES[k].name]) },
-    'wt.pos': { l: 'Posición', min: 0, max: 1, f: F.pct },
-    'fx.drive': { l: 'Saturación', min: 0, max: 1, f: F.pct },
-    'fx.crush': { l: 'Bitcrush', min: 0, max: 1, f: (v) => (v ? Math.max(1, Math.round(12 - v * 11)) + ' bits' : 'off') },
-    'fx.delay': { l: 'Delay mix', min: 0, max: 0.9, f: F.pct },
-    'fx.time': { l: 'Delay tiempo', min: 0.02, max: 1.2, f: F.sec },
-    'fx.fb': { l: 'Feedback', min: 0, max: 0.9, f: F.pct },
-    'fx.reverb': { l: 'Reverb', min: 0, max: 1, f: F.pct },
-    glide: { l: 'Glide', min: 0, max: 1, f: F.sec },
-    mono: { l: 'Modo', opts: [[false, 'Poly'], [true, 'Mono']] },
-    vol: { l: 'Volumen', min: 0, max: 1, f: F.pct },
-  }, ENVF('amp', 'Amp'), ENVF('fenv', 'Filtro'));
+    'osc1.wave': { opts: WAVES }, 'osc1.waveAll': { k: 'osc1.wave', opts: WAVES_ALL },
+    'osc1.oct': { min: -2, max: 2, step: 1, f: (v) => (v > 0 ? '+' : '') + v },
+    'osc1.detune': { min: -100, max: 100, step: 1, f: (v) => Math.round(v) + ' ct' },
+    'osc1.pw': { min: 0.02, max: 0.98, step: 0.01, f: F.pct },
+    'osc1.level': { min: 0, max: 1, f: F.pct },
+    'osc2.wave': { opts: WAVES }, 'osc2.waveAll': { k: 'osc2.wave', opts: WAVES_ALL },
+    'osc2.oct': { min: -2, max: 2, step: 1, f: (v) => (v > 0 ? '+' : '') + v },
+    'osc2.semi': { min: -12, max: 12, step: 1, f: (v) => (v > 0 ? '+' : '') + v + ' st' },
+    'osc2.detune': { min: -100, max: 100, step: 1, f: (v) => Math.round(v) + ' ct' },
+    'osc2.pw': { min: 0.02, max: 0.98, step: 0.01, f: F.pct },
+    'osc2.level': { min: 0, max: 1, f: F.pct },
+    noise: { min: 0, max: 1, f: F.pct },
+    'uni.voices': { min: 1, max: 7, step: 1, f: (v) => v + 'x' },
+    'uni.detune': { min: 0, max: 100, step: 1, f: (v) => Math.round(v) + ' ct' },
+    'filter.type': { opts: [['lowpass', 'Low-pass'], ['highpass', 'High-pass'], ['bandpass', 'Band-pass'], ['notch', 'Notch']] },
+    'filter.cutoff': { min: 20, max: 20000, log: 1, f: F.hz },
+    'filter.q': { min: 0.3, max: 30, log: 1, f: (v) => v.toFixed(1) },
+    'filter.slope': { opts: [[12, '12 dB/oct'], [24, '24 dB/oct']] },
+    'filter.env': { min: -1, max: 1, step: 0.01, f: F.bip },
+    'filter.key': { min: 0, max: 1, f: F.pct },
+    'penv.amt': { min: 0, max: 48, step: 1, f: (v) => v + ' st' },
+    'penv.decay': { min: 0.005, max: 1, log: 1, f: F.sec },
+    'lfo.wave': { opts: ['sine', 'triangle', 'square', 'sawtooth', 'sh'].map((w) => [w, w]) },
+    'lfo.rate': { min: 0.05, max: 40, log: 1, f: (v) => v.toFixed(2) + ' Hz' },
+    'lfo.depth': { min: 0, max: 1, f: F.pct },
+    'lfo.target': { opts: ['pitch', 'cutoff', 'amp', 'pan', 'wt'].map((x) => [x, x]) },
+    'fm.ratio': { min: 0.25, max: 12, step: 0.01, snap: 1, f: (v) => v.toFixed(2) },
+    'fm.index': { min: 0, max: 20, step: 0.05, f: (v) => v.toFixed(2) },
+    'fm.env': { min: 0, max: 1, f: F.pct },
+    'fm.decay': { min: 0.02, max: 4, log: 1, f: F.sec },
+    'wt.table': { opts: Object.keys(SL.TABLES).map((k) => [k, 'tables.' + k]) },
+    'wt.pos': { min: 0, max: 1, f: F.pct },
+    'fx.drive': { min: 0, max: 1, f: F.pct },
+    'fx.crush': { min: 0, max: 1, f: (v) => (v ? Math.max(1, Math.round(12 - v * 11)) + ' bits' : 'off') },
+    'fx.delay': { min: 0, max: 0.9, f: F.pct },
+    'fx.time': { min: 0.02, max: 1.2, f: F.sec },
+    'fx.fb': { min: 0, max: 0.9, f: F.pct },
+    'fx.reverb': { min: 0, max: 1, f: F.pct },
+    glide: { min: 0, max: 1, f: F.sec },
+    mono: { opts: [[false, 'poly'], [true, 'mono']] },
+    vol: { min: 0, max: 1, f: F.pct },
+  }, ENVF('amp'), ENVF('fenv'));
+
+  SL.optLabel = (lab) => {
+    let v = SL.t('opt.' + lab);
+    if (v !== 'opt.' + lab) return v;
+    v = SL.t(String(lab));
+    return typeof v === 'string' ? v : String(lab);
+  };
 
   // ---- slider / segmented control bound to engine params ----
   SL.control = function (spec) {
     const key = typeof spec === 'string' ? spec : spec.k;
     const def = Object.assign({}, SL.CT[key] || {}, typeof spec === 'object' ? spec : {});
     const path = def.k || key;
+    def.l = def.l || SL.tc(path);
     if (def.opts) {
-      const btns = def.opts.map(([v, lab]) => h('button', { class: 'seg', onclick: () => { E.ensure(); E.set(path, v); } }, lab));
+      const btns = def.opts.map(([v, lab]) => h('button', { class: 'seg', onclick: () => { E.ensure(); E.set(path, v); } }, SL.optLabel(lab)));
       const sync = () => { const cur = SL.get(E.patch, path); btns.forEach((b, i) => b.classList.toggle('on', def.opts[i][0] === cur)); };
       sync();
       SL.listen((p) => (p === path || p === '*') && sync());
@@ -140,7 +149,7 @@
   SL.viz.scope = (cv, opts) => () => {
     const { g, w, h: hh, d } = SL.fit(cv);
     g.clearRect(0, 0, w, hh); grid(g, w, hh, d);
-    if (!E.ctx) return SL.label(g, 'Tocá una nota', 10 * d, 18 * d, d);
+    if (!E.ctx) return SL.label(g, SL.t('viz.playNote'), 10 * d, 18 * d, d);
     E.ana.getFloatTimeDomainData(tbuf);
     let s = 0;
     for (let i = 1; i < 2000; i++) if (tbuf[i - 1] < 0 && tbuf[i] >= 0) { s = i; break; }
@@ -148,7 +157,7 @@
     g.beginPath();
     for (let i = 0; i < N; i++) { const x = (i / (N - 1)) * w, y = hh / 2 - tbuf[s + i] * hh * 0.42; i ? g.lineTo(x, y) : g.moveTo(x, y); }
     glow(g, SL.C.cyan, 2.2 * d, 14 * d); g.stroke();
-    g.shadowBlur = 0; SL.label(g, 'OSCILOSCOPIO · forma de onda', 10 * d, 16 * d, d);
+    g.shadowBlur = 0; SL.label(g, SL.t('viz.scope'), 10 * d, 16 * d, d);
   };
   const fx = (f, w) => (w * Math.log(f / 20)) / Math.log(1000);
   const xf = (x, w) => 20 * Math.pow(1000, x / w);
@@ -211,8 +220,8 @@
         glow(g, SL.C.lime, 2.5 * d, 12 * d); g.stroke();
         const cx = fx(cut, w), cy = hh * (1 - Math.log(f.q / 0.3) / Math.log(100));
         g.beginPath(); g.arc(cx, cy, 9 * d, 0, 7); g.fillStyle = 'rgba(182,255,59,0.25)'; g.fill(); glow(g, SL.C.lime, 2 * d, 10 * d); g.stroke();
-        SL.label(g, 'ESPECTRO + FILTRO · arrastrá el punto', 10 * d, 16 * d, d);
-      } else SL.label(g, 'ESPECTRO · frecuencias presentes', 10 * d, 16 * d, d);
+        SL.label(g, SL.t('viz.filter'), 10 * d, 16 * d, d);
+      } else SL.label(g, SL.t('viz.spectrum'), 10 * d, 16 * d, d);
     };
   };
 
@@ -241,7 +250,7 @@
     }
     if (p.osc2.level > 0.01) draw(SL.oscCycle(p.osc2), SL.C.orange, 2);
     draw(c1, SL.C.pink, 2);
-    g.shadowBlur = 0; SL.label(g, 'UN CICLO DE LA ONDA (×2)', 10 * d, 16 * d, d);
+    g.shadowBlur = 0; SL.label(g, SL.t('viz.cycle'), 10 * d, 16 * d, d);
   };
 
   SL.viz.adsr = (cv, key) => {
@@ -303,7 +312,7 @@
           g.beginPath(); g.arc(x, y, 6 * d, 0, 7); g.fillStyle = '#fff'; g.shadowColor = '#fff'; g.shadowBlur = 18 * d; g.fill();
         }
       }
-      g.shadowBlur = 0; SL.label(g, (key === 'amp' ? 'ENVOLVENTE DE AMPLITUD' : 'ENVOLVENTE DE FILTRO') + ' · arrastrá los puntos', 10 * d, 16 * d, d);
+      g.shadowBlur = 0; SL.label(g, SL.t(key === 'amp' ? 'viz.ampEnv' : 'viz.filtEnv') + ' · ' + SL.t('viz.drag'), 10 * d, 16 * d, d);
     };
   };
 
@@ -319,7 +328,7 @@
       glow(g, SL.C.violet, 2.5 * d, 12 * d); g.stroke();
       const y = hh / 2 - E.lfoVal * l.depth * hh * 0.4;
       g.beginPath(); g.arc(w * 0.85, y, 8 * d, 0, 7); g.fillStyle = SL.C.violet; g.fill();
-      const tl = { pitch: 'PITCH', cutoff: 'CUTOFF', amp: 'VOLUMEN', pan: 'PANEO', wt: 'WAVETABLE' }[l.target];
+      const tl = SL.t('viz.targets.' + l.target);
       g.shadowBlur = 0; SL.label(g, 'LFO → ' + tl + '   ' + l.rate.toFixed(2) + ' Hz', 10 * d, 16 * d, d);
       g.beginPath(); g.moveTo(w * 0.85 + 12 * d, y); g.lineTo(w - 10 * d, y); g.setLineDash([4 * d, 4 * d]); g.strokeStyle = SL.C.violet; g.lineWidth = d; g.stroke(); g.setLineDash([]);
     };
@@ -361,8 +370,8 @@
       glow(g, harmonic ? SL.C.cyan : SL.C.orange, 4 * d, 10 * d); g.stroke();
     });
     g.shadowBlur = 0;
-    SL.label(g, 'BANDAS LATERALES FM · portadora ± n×moduladora', 10 * d, 16 * d, d);
-    SL.label(g, '■ armónicas', 10 * d, 32 * d, d, SL.C.cyan); SL.label(g, '■ inarmónicas', 84 * d, 32 * d, d, SL.C.orange);
+    SL.label(g, SL.t('viz.fm'), 10 * d, 16 * d, d);
+    SL.label(g, SL.t('viz.harmonic'), 10 * d, 32 * d, d, SL.C.cyan); SL.label(g, SL.t('viz.inharmonic'), w / 2, 32 * d, d, SL.C.orange);
   };
 
   SL.viz.wt3d = (cv) => {
@@ -382,7 +391,7 @@
         else { g.shadowBlur = 0; g.strokeStyle = `rgba(62,240,255,${0.12 + 0.35 * (1 - Math.abs(k - cur) / N)})`; g.lineWidth = d; }
         g.stroke();
       }
-      g.shadowBlur = 0; SL.label(g, 'WAVETABLE · ' + SL.TABLES[name].name.toUpperCase() + ' · cuadro ' + (cur + 1) + '/' + N, 10 * d, 16 * d, d);
+      g.shadowBlur = 0; SL.label(g, SL.t('viz.wt') + ' · ' + SL.t('tables.' + name).toUpperCase() + ' · ' + SL.t('viz.frame') + ' ' + (cur + 1) + '/' + N, 10 * d, 16 * d, d);
     };
   };
 
@@ -416,12 +425,11 @@
       g.beginPath();
       for (let i = 0; i <= 512; i++) { const x = (i / 512) * w, y = hh * 0.23 - cyc[i % 256] * hh * 0.17; i ? g.lineTo(x, y) : g.moveTo(x, y); }
       glow(g, SL.C.cyan, 2.2 * d, 12 * d); g.stroke();
-      g.shadowBlur = 0; SL.label(g, 'ARMÓNICOS · dibujá las barras', 10 * d, 14 * d, d);
+      g.shadowBlur = 0; SL.label(g, SL.t('viz.harm'), 10 * d, 14 * d, d);
     };
   };
 
   // ---- stage: canvas with chips to switch visualisers ----
-  const VIZ_NAMES = { scope: 'Onda', spectrum: 'Espectro', filter: 'Filtro', wave: 'Ciclo', adsr: 'Env Amp', fenv: 'Env Filtro', lfo: 'LFO', fm: 'FM', wt3d: 'Wavetable', harm: 'Armónicos' };
   SL.stage = function (list, opts) {
     opts = opts || {};
     const cv = h('canvas', { class: 'stage-cv' });
@@ -436,7 +444,7 @@
       drawFn = mk(fresh);
       [...chips.children].forEach((b) => b.classList.toggle('on', b.dataset.v === name));
     }
-    if (list.length > 1) list.forEach((n) => chips.append(h('button', { class: 'chip', 'data-v': n, onclick: () => pick(n) }, VIZ_NAMES[n])));
+    if (list.length > 1) list.forEach((n) => chips.append(h('button', { class: 'chip', 'data-v': n, onclick: () => pick(n) }, SL.t('viz.tabs.' + n))));
     pick(list[0]);
     SL.anim(() => drawFn && drawFn());
     wrap.pick = pick;

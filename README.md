@@ -6,30 +6,34 @@
 </p>
 
 <h1 align="center">SynthLab</h1>
-<p align="center"><b>Aprendé síntesis de sonido viendo y escuchando.</b><br>
-App para Android y para el navegador · código abierto · sin dependencias</p>
+<p align="center"><b>Conocé la síntesis de sonido viendo y escuchando.</b><br>
+Un acercamiento breve al mundo de la síntesis, para tener una noción de cómo funciona.<br>
+Web app · sin descargas · código abierto · sin dependencias</p>
 
 <p align="center">
-  <a href="https://buenosairesfront.github.io/SynthLab/"><b>🌐 Landing page</b></a> ·
-  <a href="https://buenosairesfront.github.io/SynthLab/app/"><b>▶ Probar en el navegador</b></a> ·
-  <a href="https://github.com/buenosairesfront/SynthLab/raw/main/docs/SynthLab.apk"><b>⬇ Descargar APK</b></a>
+  <a href="https://buenosairesfront.github.io/SynthLab/"><b>🌐 Página</b></a> ·
+  <a href="https://buenosairesfront.github.io/SynthLab/app/"><b>▶ Abrir SynthLab</b></a>
 </p>
+
+<p align="center">Español · English · Deutsch · 中文 · 日本語 · हिन्दी</p>
 
 ---
 
-SynthLab enseña síntesis con un sintetizador de verdad y gráficos en vivo: cada vez que movés un parámetro, **ves** lo que **escuchás**. Tiene osciloscopio, espectro, la curva del filtro (que se arrastra con el dedo), un ADSR editable con la nota corriendo, la wavetable en 3D y las bandas laterales de FM calculadas en tiempo real.
+SynthLab es una introducción corta e interactiva a la síntesis: no es un curso completo, sino un recorrido para entender las ideas centrales y empezar a entrenar el oído. Tiene un sintetizador de verdad y gráficos en vivo: cada vez que movés un parámetro, **ves** lo que **escuchás**. Hay osciloscopio, espectro, la curva del filtro (que se arrastra con el dedo o el mouse), un ADSR editable con la nota corriendo, la wavetable en 3D y las bandas laterales de FM calculadas en tiempo real.
+
+**No hace falta descargar nada:** se abre en el navegador, en la computadora o en el celular. Si querés, la podés instalar en la computadora como app (y funciona sin conexión).
 
 ## ✨ Qué tiene
 
 | Sección | Contenido |
 |---|---|
-| **Aprender** | 24 lecciones en 9 módulos, con tareas que se marcan solas cuando las cumplís ("hacé un pluck", "hacé una campana"). |
+| **Conocer** | 24 lecciones breves en 9 módulos, con tareas que se marcan solas cuando las cumplís ("hacé un pluck", "hacé una campana"). |
 | **Recetas** | 10 sonidos clásicos paso a paso: bajo ácido 303, pad, pluck, supersaw, Reese, campana FM, bombo, redoblante/hi-hat, growl wavetable, e-piano FM. |
 | **Tocar** | Sintetizador completo y secuenciador de 16 pasos con escalas y presets. |
 | **Lab** | Cuerda física (Karplus-Strong), Lissajous y ring mod, secuenciador del caos (mapa logístico), "dibujá tu onda" (Fourier), pad XY tipo Kaoss, Destructor (saturación/bitcrush). |
 | **Retos** | Entrenamiento de oído: 19 tipos de preguntas y 5 desafíos de "igualá el sonido". Puntos XP y mejores puntajes. |
 
-### Temario
+### Recorrido
 
 1. **Fundamentos del sonido**: frecuencia, octavas, timbre, armónicos
 2. **Osciladores**: formas de onda, pulso/PWM, detune, unison, ruido
@@ -55,65 +59,56 @@ Polifónico (14 voces), sobre Web Audio API:
 - Saturación, bitcrush, delay con feedback y reverb por convolución
 - Modo mono con glide
 
-## 📱 Instalar en Android
+## 💻 Instalarla en la computadora (opcional)
 
-1. Desde el celular, descargá [`SynthLab.apk`](https://github.com/buenosairesfront/SynthLab/raw/main/docs/SynthLab.apk) (descarga directa desde GitHub).
-2. Abrilo desde la notificación de descarga o desde **Archivos → Descargas**.
-3. Si Android lo pide, permití **instalar apps de esta fuente**.
-4. Tocá **Instalar**. Si aparece Play Protect: **Más detalles → Instalar de todas formas** (sale porque la app no viene de la Play Store).
+SynthLab es una web app instalable:
 
-Requiere Android 7.0 o superior. Funciona sin internet.
+- **Chrome / Edge:** abrí la app y tocá **Instalar** (arriba en la app o en la página), o el ícono de instalar en la barra de direcciones, o el menú **⋮ → Instalar SynthLab**.
+- **Safari (Mac):** **Archivo → Agregar al Dock**.
+
+Queda como una app más en tu computadora y funciona sin conexión.
+
+## 🌍 Idiomas
+
+La app y la página están en **español, inglés, alemán, chino, japonés e hindi**. El idioma se elige solo según el navegador y se puede cambiar con el selector de arriba. Los textos están en `web/lang/<código>.js` (app) y `site/landing-i18n.js` (página); para sumar un idioma, copiá `web/lang/es.js`, traducilo y agregalo en `web/index.html` y en `web/js/i18n.js`.
 
 ## 🗂 Estructura del repositorio
 
 ```
-web/              La app (HTML + JS puro). Es la misma para Android y navegador.
+web/              La app (HTML + JS puro, sin dependencias)
   index.html      Shell y estilos
+  lang/*.js       Textos de cada idioma (es, en, de, zh, ja, hi)
+  js/i18n.js      Elección de idioma y traducción de textos
   js/engine.js    Motor de audio: voces, filtros, envolventes, LFO, FM, wavetables, efectos
   js/ui.js        Controles, teclado multitáctil y visualizaciones en Canvas
-  js/content.js   Lecciones, recetas y generadores de retos de oído
+  js/content.js   Estructura de lecciones, recetas y retos de oído
   js/lab.js       Experimentos del laboratorio
-  js/app.js       Navegación, pantallas, progreso (localStorage)
-android/          Envoltorio nativo: una Activity con WebView que carga web/
-site/             Landing page + capturas
+  js/app.js       Navegación, pantallas, progreso (localStorage), instalación
+site/             Página de presentación, manifiesto, service worker, íconos y capturas
 docs/             Sitio armado para GitHub Pages (generado por scripts/build-site.sh)
-scripts/          Compilación del APK y del sitio
+scripts/          Armado del sitio
 ```
 
 ## 🛠 Desarrollo
 
-**Correr la versión web:** abrí `web/index.html` en el navegador, o levantá un servidor:
+Levantá un servidor local y abrí la app:
 
 ```bash
-npx serve web        # o: python3 -m http.server -d web
+python3 -m http.server -d web 8000     # → http://localhost:8000
 ```
 
-**Compilar el APK** (no hace falta Android Studio ni el SDK de Android):
+Después de cambiar algo en `web/` o `site/`, regenerá `docs/` (página + app + lista de archivos para uso sin conexión):
 
 ```bash
-./scripts/build-apk.sh      # → dist/SynthLab.apk
+./scripts/build-site.sh
 ```
 
-Necesita Java 17+, Node/npm, Python 3, `curl` y `zip`. La primera vez descarga el toolchain en `.tools/`: `aapt2` (paquete npm `aaptjs3`), `android.jar` (Robolectric `android-all`), `dx` y `apksig` (Maven Central).
+## 🌐 Publicación (GitHub Pages)
 
-> **Firma:** el script firma con `keys/release.p12` (si no existe, lo crea). Ese archivo **no** se sube a git. Guardalo bien: para que una versión nueva se instale encima de la anterior, tiene que estar firmada con la misma clave. Podés usar otra clave con `SYNTHLAB_KEYSTORE=/ruta/clave.p12 SYNTHLAB_KS_PASS=... ./scripts/build-apk.sh`.
+El workflow `.github/workflows/pages.yml` publica la carpeta `docs/` en cada push a `main`. En **Settings → Pages**, la fuente tiene que estar en **GitHub Actions**.
 
-**Armar el sitio** (landing + app web + APK) en `docs/`:
-
-```bash
-./scripts/build-apk.sh && ./scripts/build-site.sh
-```
-
-## 🌐 Publicar la landing en GitHub Pages
-
-1. Subí el repo a GitHub (por ejemplo, con el nombre `SynthLab`).
-2. Andá a **Settings → Pages**.
-3. En **Source** elegí **GitHub Actions**. El workflow `.github/workflows/pages.yml` publica la carpeta `docs/` en cada push a `main` (también se puede correr a mano desde la pestaña **Actions**).
-4. En uno o dos minutos queda online en `https://buenosairesfront.github.io/SynthLab/`:
-   - `/` → landing page
-   - `/app/` → la app en el navegador
-   - `/SynthLab.apk` → descarga directa
-
+- `https://buenosairesfront.github.io/SynthLab/` → página
+- `https://buenosairesfront.github.io/SynthLab/app/` → la app
 
 ## 📄 Licencia
 

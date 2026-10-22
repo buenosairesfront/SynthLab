@@ -1,6 +1,7 @@
 // Experimental lab: each experiment builds its own screen body.
 (function () {
-  const SL = window.SL, E = SL.engine, h = SL.h, C = SL.C;
+  const SL = window.SL, E = SL.engine, h = SL.h, C = SL.C, t = (k, v) => SL.t(k, v);
+  // names, descriptions and texts: lab.<id>.* in the language files
   const PENTA = [0, 3, 5, 7, 10];
 
   function slider(label, min, max, val, fmt, on, log) {
@@ -20,7 +21,7 @@
 
   SL.LAB = [
     // ------------------------------------------------------------------
-    { id: 'string', name: 'Cuerda física', col: C.cyan, desc: 'Karplus-Strong: una cuerda hecha con ruido y un delay.', build(root) {
+    { id: 'string', col: C.cyan, build(root) {
       const st = { damp: 0.996, bright: 0.5, exc: 'noise', last: null, t0: 0, N: 100 };
       E.load({ fx: { reverb: 0.25 } });
       const cv = canvas();
@@ -62,18 +63,18 @@
           i ? g.lineTo(x, yy) : g.moveTo(x, yy);
         }
         g.strokeStyle = C.cyan; g.lineWidth = 3 * d; g.shadowColor = C.cyan; g.shadowBlur = 10 + amp * 30 * d; g.stroke();
-        g.shadowBlur = 0; SL.label(g, 'LA CUERDA (el buffer del delay, en vivo)', 10 * d, 16 * d, d);
+        g.shadowBlur = 0; SL.label(g, t('lab.string.viz'), 10 * d, 16 * d, d);
       });
-      const exc = h('div', { class: 'segs' }, [['noise', 'Ruido'], ['saw', 'Rampa'], ['sine', 'Suave']].map(([v, l]) => h('button', { class: 'seg' + (v === st.exc ? ' on' : ''), onclick: (ev) => { st.exc = v; [...exc.children].forEach((b) => b.classList.toggle('on', b === ev.target)); } }, l)));
+      const exc = h('div', { class: 'segs' }, [['noise', 0], ['saw', 1], ['sine', 2]].map(([v, i]) => [v, t('lab.string.excOpts')[i]]).map(([v, l]) => h('button', { class: 'seg' + (v === st.exc ? ' on' : ''), onclick: (ev) => { st.exc = v; [...exc.children].forEach((b) => b.classList.toggle('on', b === ev.target)); } }, l)));
       root.append(h('div', { class: 'stage' }, cv), h('div', { class: 'scroll' },
-        card(h('p', { html: 'Un pulso corto de <b>ruido</b> entra a una línea de delay del largo de un período. Cada vuelta se promedia con su vecino (un filtro pasa-bajos) y pierde un poco de energía. Resultado: <b>una cuerda pulsada</b>, físicamente plausible, con cero osciladores.' })),
-        card(slider('Sustain (realimentación)', 0.95, 0.9995, st.damp, (v) => v.toFixed(4), (v) => (st.damp = v)),
-          slider('Brillo', 0, 1, st.bright, SL.fmt.pct, (v) => (st.bright = v)),
-          h('div', { class: 'ctl' }, h('div', { class: 'ctl-l' }, 'Excitación'), exc))),
+        card(h('p', { html: t('lab.string.text') })),
+        card(slider(t('lab.string.sustain'), 0.95, 0.9995, st.damp, (v) => v.toFixed(4), (v) => (st.damp = v)),
+          slider(t('lab.string.bright'), 0, 1, st.bright, SL.fmt.pct, (v) => (st.bright = v)),
+          h('div', { class: 'ctl' }, h('div', { class: 'ctl-l' }, t('lab.string.exc')), exc))),
         dock({ start: 48, onNote: (n) => ks(n), offNote: () => {} }));
     } },
     // ------------------------------------------------------------------
-    { id: 'lissa', name: 'Lissajous y ring mod', col: C.pink, desc: 'Dos osciladores dibujando en el plano X/Y.', build(root) {
+    { id: 'lissa', col: C.pink, build(root) {
       const c = E.ensure();
       const a = c.createOscillator(), b = c.createOscillator(), ga = c.createGain(), gb = c.createGain(), mg = c.createChannelMerger(2), out = c.createGain();
       const ring = c.createGain(), ringOut = c.createGain();
@@ -85,11 +86,11 @@
       E.load({});
       const st = { ratio: 1.5, det: 0.3, on: false, ring: false };
       const apply = () => {
-        const t = c.currentTime, f = 110;
-        a.frequency.setTargetAtTime(f, t, 0.02); b.frequency.setTargetAtTime(f * st.ratio + st.det, t, 0.02);
-        out.gain.setTargetAtTime(st.on && !st.ring ? 0.6 : 0, t, 0.03);
-        ringOut.gain.setTargetAtTime(st.on && st.ring ? 0.9 : 0, t, 0.03);
-        lab.textContent = 'Ratio ' + st.ratio.toFixed(3) + (Math.abs(st.ratio - Math.round(st.ratio * 4) / 4) < 0.01 ? ' (simple: figura estable)' : '');
+        const tm = c.currentTime, f = 110;
+        a.frequency.setTargetAtTime(f, tm, 0.02); b.frequency.setTargetAtTime(f * st.ratio + st.det, tm, 0.02);
+        out.gain.setTargetAtTime(st.on && !st.ring ? 0.6 : 0, tm, 0.03);
+        ringOut.gain.setTargetAtTime(st.on && st.ring ? 0.9 : 0, tm, 0.03);
+        lab.textContent = t('lab.lissa.ratio') + ' ' + st.ratio.toFixed(3) + (Math.abs(st.ratio - Math.round(st.ratio * 4) / 4) < 0.01 ? ' ' + t('lab.lissa.stable') : '');
       };
       SL.onDispose(() => { try { a.stop(); b.stop(); out.disconnect(); ringOut.disconnect(); } catch (e) {} });
       const cv = canvas(), bx = new Float32Array(2048), by = new Float32Array(2048);
@@ -115,18 +116,18 @@
         g.beginPath();
         for (let i = 0; i < 2048; i++) { const x = cx + bx[i] * s * 1.4, y = cy - by[i] * s * 1.4; i ? g.lineTo(x, y) : g.moveTo(x, y); }
         g.strokeStyle = st.ring ? C.orange : C.pink; g.lineWidth = 2 * d; g.shadowColor = g.strokeStyle; g.shadowBlur = 14 * d; g.stroke();
-        g.shadowBlur = 0; SL.label(g, 'X = osc A · Y = osc B · arrastrá el dedo', 10 * d, 16 * d, d);
+        g.shadowBlur = 0; SL.label(g, t('lab.lissa.viz'), 10 * d, 16 * d, d);
       });
-      const hold = h('button', { class: 'pill', onclick: () => { hold.classList.toggle('on'); st.on = hold.classList.contains('on'); apply(); } }, 'Sostener');
-      const rb = h('button', { class: 'pill', onclick: () => { st.ring = !st.ring; rb.classList.toggle('on', st.ring); apply(); } }, 'Ring mod');
+      const hold = h('button', { class: 'pill', onclick: () => { hold.classList.toggle('on'); st.on = hold.classList.contains('on'); apply(); } }, t('lab.lissa.hold'));
+      const rb = h('button', { class: 'pill', onclick: () => { st.ring = !st.ring; rb.classList.toggle('on', st.ring); apply(); } }, t('lab.lissa.ring'));
       root.append(h('div', { class: 'stage tall' }, cv), h('div', { class: 'scroll' },
         card(lab, h('div', { class: 'row' }, hold, rb)),
-        card(h('p', { html: 'El osc A va al canal izquierdo y el osc B al derecho. Dibujando izquierdo vs. derecho aparecen las <b>figuras de Lissajous</b>: con ratios simples (3:2 = quinta, 2:1 = octava) la figura es estable — es lo que el oído percibe como <b>consonancia</b>. Arriba/abajo desafina y la figura gira.' }),
-          h('p', { html: '<b>Ring mod</b> multiplica las dos ondas: suena la suma y la resta de frecuencias, nunca las originales. Metálico, robótico (las voces de los Daleks).' }))));
+        card(h('p', { html: t('lab.lissa.text') }),
+          h('p', { html: t('lab.lissa.text2') }))));
       apply();
     } },
     // ------------------------------------------------------------------
-    { id: 'chaos', name: 'Secuenciador del caos', col: C.lime, desc: 'El mapa logístico decide qué nota toca.', build(root) {
+    { id: 'chaos', col: C.lime, build(root) {
       E.load({ osc1: { wave: 'square' }, amp: { a: 0.002, d: 0.22, s: 0, r: 0.2 }, filter: { cutoff: 600, env: 0.5, q: 4 }, fenv: { d: 0.15 }, fx: { delay: 0.25, time: 0.36, fb: 0.4, reverb: 0.3 } });
       const st = { r: 3.5, x: 0.4, hist: [], bpm: 140 };
       const bif = h('canvas'), cv = canvas();
@@ -152,7 +153,7 @@
         g.strokeStyle = C.pink; g.lineWidth = 2 * d; g.shadowColor = C.pink; g.shadowBlur = 10 * d;
         g.beginPath(); g.moveTo(px, 0); g.lineTo(px, hh); g.stroke();
         st.hist.forEach((x, i) => { const a = (i + 1) / st.hist.length; g.beginPath(); g.arc(px, hh - x * hh * 0.9 - hh * 0.05, (4 + 6 * a) * d, 0, 7); g.fillStyle = `rgba(62,240,255,${a})`; g.fill(); });
-        g.shadowBlur = 0; SL.label(g, 'DIAGRAMA DE BIFURCACIÓN · r = ' + st.r.toFixed(3), 10 * d, 16 * d, d);
+        g.shadowBlur = 0; SL.label(g, t('lab.chaos.viz') + ' · r = ' + st.r.toFixed(3), 10 * d, 16 * d, d);
       });
       const step = (i, when) => {
         st.x = st.r * st.x * (1 - st.x);
@@ -161,14 +162,14 @@
         E.play(note, when, 0.12, 0.6 + st.x * 0.4);
         SL.at(when, () => { st.hist.push(st.x); if (st.hist.length > 8) st.hist.shift(); });
       };
-      const play = h('button', { class: 'btn big', onclick: () => { if (SL.clock.running) { SL.clock.stop(); play.textContent = '▶ Reproducir'; } else { SL.clock.start(() => 60 / st.bpm / 2, step); play.textContent = '■ Detener'; } } }, '▶ Reproducir');
+      const play = h('button', { class: 'btn big', onclick: () => { if (SL.clock.running) { SL.clock.stop(); play.textContent = t('lab.chaos.play'); } else { SL.clock.start(() => 60 / st.bpm / 2, step); play.textContent = t('lab.chaos.stop'); } } }, t('lab.chaos.play'));
       SL.onDispose(() => SL.clock.stop());
       root.append(h('div', { class: 'stage tall' }, cv), h('div', { class: 'scroll' },
-        card(play, slider('r (caos)', 2.8, 4, st.r, (v) => v.toFixed(3), (v) => (st.r = v)), slider('Tempo', 60, 220, st.bpm, (v) => Math.round(v) + ' bpm', (v) => (st.bpm = v)), SL.control('filter.cutoff'), SL.control('osc1.wave')),
-        card(h('p', { html: 'Cada paso calcula <b>x = r·x·(1−x)</b> y convierte x en una nota de la escala pentatónica. Con r bajo, x se estabiliza en un valor: <b>una nota repetida</b>. Al subir r se divide en 2, 4, 8 valores: <b>patrones que se repiten</b>. Pasado ~3.57 entra en <b>caos</b>: nunca se repite. Buscá las "ventanas" de orden dentro del caos (por ejemplo, cerca de r = 3.83 aparece un ciclo de 3).' }))));
+        card(play, slider(t('lab.chaos.r'), 2.8, 4, st.r, (v) => v.toFixed(3), (v) => (st.r = v)), slider(t('lab.chaos.tempo'), 60, 220, st.bpm, (v) => Math.round(v) + ' bpm', (v) => (st.bpm = v)), SL.control('filter.cutoff'), SL.control('osc1.wave')),
+        card(h('p', { html: t('lab.chaos.text') }))));
     } },
     // ------------------------------------------------------------------
-    { id: 'draw', name: 'Dibujá tu onda', col: C.orange, desc: 'Dibujá un ciclo con el dedo y tocalo.', build(root) {
+    { id: 'draw', col: C.orange, build(root) {
       const N = 256, wave = new Float32Array(N);
       for (let i = 0; i < N; i++) wave[i] = Math.sin((2 * Math.PI * i) / N);
       E.load({ osc1: { wave: 'custom' }, fx: { reverb: 0.15 } });
@@ -200,32 +201,32 @@
         g.beginPath();
         for (let i = 0; i < N; i++) { const x = (i / (N - 1)) * w, y = hh / 2 - wave[i] * hh * 0.45; i ? g.lineTo(x, y) : g.moveTo(x, y); }
         g.strokeStyle = C.orange; g.lineWidth = 3 * d; g.shadowColor = C.orange; g.shadowBlur = 14 * d; g.stroke();
-        g.shadowBlur = 0; SL.label(g, 'DIBUJÁ UN CICLO', 10 * d, 16 * d, d);
+        g.shadowBlur = 0; SL.label(g, t('lab.draw.viz'), 10 * d, 16 * d, d);
         ({ g, w, h: hh, d } = SL.fit(sp));
         g.clearRect(0, 0, w, hh);
         const mx = Math.max(1e-6, ...amps), bw = w / 32;
         amps.forEach((a, i) => { const bh = (a / mx) * (hh - 22 * d); g.fillStyle = i === 0 ? C.cyan : C.violet; g.fillRect(i * bw + bw * 0.15, hh - 4 * d - bh, bw * 0.7, bh); });
-        SL.label(g, 'ARMÓNICOS DE TU ONDA (Fourier)', 8 * d, 14 * d, d);
+        SL.label(g, t('lab.draw.spec'), 8 * d, 14 * d, d);
       });
       const preset = (fn) => () => { for (let i = 0; i < N; i++) wave[i] = fn(i / N); commit(); };
       root.append(h('div', { class: 'stage' }, cv), h('div', { class: 'scroll' },
         card(h('div', { class: 'spec-wrap' }, sp), h('div', { class: 'row wrap' },
-          h('button', { class: 'pill', onclick: preset((t) => Math.sin(2 * Math.PI * t)) }, 'Seno'),
-          h('button', { class: 'pill', onclick: preset((t) => 2 * t - 1) }, 'Sierra'),
-          h('button', { class: 'pill', onclick: preset((t) => (t < 0.5 ? 1 : -1)) }, 'Cuadrada'),
-          h('button', { class: 'pill', onclick: preset(() => Math.random() * 2 - 1) }, 'Ruido'),
-          h('button', { class: 'pill', onclick: preset((t) => Math.sin(2 * Math.PI * t) * (t < 0.5 ? 1 : 0.2) + 0.3 * Math.sin(10 * Math.PI * t)) }, 'Rara'))),
-        card(h('p', { html: 'La forma que dibujás se descompone en armónicos (análisis de <b>Fourier</b>) y se vuelve un oscilador real. Probá picos filosos (más agudos) vs. curvas suaves (más graves y redondos).' }), SL.control('filter.cutoff'), SL.control('amp.r'))),
+          h('button', { class: 'pill', onclick: preset((t) => Math.sin(2 * Math.PI * t)) }, t('lab.draw.presets')[0]),
+          h('button', { class: 'pill', onclick: preset((t) => 2 * t - 1) }, t('lab.draw.presets')[1]),
+          h('button', { class: 'pill', onclick: preset((t) => (t < 0.5 ? 1 : -1)) }, t('lab.draw.presets')[2]),
+          h('button', { class: 'pill', onclick: preset(() => Math.random() * 2 - 1) }, t('lab.draw.presets')[3]),
+          h('button', { class: 'pill', onclick: preset((t) => Math.sin(2 * Math.PI * t) * (t < 0.5 ? 1 : 0.2) + 0.3 * Math.sin(10 * Math.PI * t)) }, t('lab.draw.presets')[4]))),
+        card(h('p', { html: t('lab.draw.text') }), SL.control('filter.cutoff'), SL.control('amp.r'))),
         dock({ start: 48 }));
     } },
     // ------------------------------------------------------------------
-    { id: 'xy', name: 'Pad XY', col: C.violet, desc: 'Tocá y arrastrá para controlar dos parámetros a la vez.', build(root) {
+    { id: 'xy', col: C.violet, build(root) {
       const MAPS = [
-        { n: 'Filtro', base: { osc1: { wave: 'sawtooth' }, uni: { voices: 3, detune: 15 }, fx: { delay: 0.2, reverb: 0.3 } }, x: ['filter.cutoff', 60, 12000, 1], y: ['filter.q', 0.5, 25, 1] },
-        { n: 'Wavetable', base: { osc1: { wave: 'wavetable' }, wt: { table: 'fold' }, lfo: { target: 'wt' }, fx: { reverb: 0.3 } }, x: ['wt.pos', 0, 1, 0], y: ['lfo.depth', 0, 1, 0] },
-        { n: 'FM', base: { osc1: { wave: 'sine' }, fx: { reverb: 0.35 } }, x: ['fm.ratio', 0.5, 8, 0], y: ['fm.index', 0, 12, 0] },
-        { n: 'Wobble', base: { osc1: { wave: 'sawtooth', oct: -1 }, osc2: { level: 0.6, detune: 12, oct: -1 }, filter: { cutoff: 400, q: 8 }, lfo: { target: 'cutoff', depth: 0.6 }, fx: { drive: 0.4 } }, x: ['lfo.rate', 0.5, 16, 1], y: ['filter.cutoff', 100, 3000, 1] },
-        { n: 'Dub delay', base: { osc1: { wave: 'triangle' }, amp: { a: 0.002, d: 0.2, s: 0.2, r: 0.2 }, fx: { delay: 0.55 } }, x: ['fx.time', 0.05, 1, 0], y: ['fx.fb', 0, 0.92, 0] },
+        { n: 0, base: { osc1: { wave: 'sawtooth' }, uni: { voices: 3, detune: 15 }, fx: { delay: 0.2, reverb: 0.3 } }, x: ['filter.cutoff', 60, 12000, 1], y: ['filter.q', 0.5, 25, 1] },
+        { n: 1, base: { osc1: { wave: 'wavetable' }, wt: { table: 'fold' }, lfo: { target: 'wt' }, fx: { reverb: 0.3 } }, x: ['wt.pos', 0, 1, 0], y: ['lfo.depth', 0, 1, 0] },
+        { n: 2, base: { osc1: { wave: 'sine' }, fx: { reverb: 0.35 } }, x: ['fm.ratio', 0.5, 8, 0], y: ['fm.index', 0, 12, 0] },
+        { n: 3, base: { osc1: { wave: 'sawtooth', oct: -1 }, osc2: { level: 0.6, detune: 12, oct: -1 }, filter: { cutoff: 400, q: 8 }, lfo: { target: 'cutoff', depth: 0.6 }, fx: { drive: 0.4 } }, x: ['lfo.rate', 0.5, 16, 1], y: ['filter.cutoff', 100, 3000, 1] },
+        { n: 4, base: { osc1: { wave: 'triangle' }, amp: { a: 0.002, d: 0.2, s: 0.2, r: 0.2 }, fx: { delay: 0.55 } }, x: ['fx.time', 0.05, 1, 0], y: ['fx.fb', 0, 0.92, 0] },
       ];
       let map = MAPS[0], note = 45, down = false;
       const trail = [];
@@ -256,18 +257,18 @@
           g.fillStyle = `hsla(${280 + p.x * 80},100%,65%,${p.life * 0.5})`; g.fill();
         }
         g.shadowBlur = 0;
-        SL.label(g, 'X → ' + (SL.CT[map.x[0]] || {}).l, 10 * d, hh - 10 * d, d, C.text);
-        g.save(); g.translate(16 * d, hh - 30 * d); g.rotate(-Math.PI / 2); SL.label(g, 'Y → ' + (SL.CT[map.y[0]] || {}).l, 0, 0, d, C.text); g.restore();
+        SL.label(g, 'X → ' + SL.tc(map.x[0]), 10 * d, hh - 10 * d, d, C.text);
+        g.save(); g.translate(16 * d, hh - 30 * d); g.rotate(-Math.PI / 2); SL.label(g, 'Y → ' + SL.tc(map.y[0]), 0, 0, d, C.text); g.restore();
       });
-      const segs = h('div', { class: 'segs' }, MAPS.map((m) => h('button', { class: 'seg', onclick: () => setMap(m) }, m.n)));
+      const segs = h('div', { class: 'segs' }, MAPS.map((m) => h('button', { class: 'seg', onclick: () => setMap(m) }, t('lab.xy.maps')[m.n])));
       const notes = h('div', { class: 'segs' }, [[33, 'A1'], [45, 'A2'], [57, 'A3'], [69, 'A4']].map(([n, l]) => h('button', { class: 'seg' + (n === note ? ' on' : ''), onclick: (ev) => { note = n; [...notes.children].forEach((b) => b.classList.toggle('on', b === ev.target)); } }, l)));
       root.append(h('div', { class: 'stage xl' }, cv), h('div', { class: 'scroll' },
-        card(h('div', { class: 'ctl' }, h('div', { class: 'ctl-l' }, 'Mapa'), segs), h('div', { class: 'ctl' }, h('div', { class: 'ctl-l' }, 'Nota'), notes)),
-        card(h('p', { html: 'Como un Kaoss Pad: tocar suena, arrastrar mueve <b>dos parámetros a la vez</b>. Controlar dos cosas juntas genera gestos imposibles con una perilla sola.' }))));
+        card(h('div', { class: 'ctl' }, h('div', { class: 'ctl-l' }, t('lab.xy.map')), segs), h('div', { class: 'ctl' }, h('div', { class: 'ctl-l' }, t('lab.xy.note')), notes)),
+        card(h('p', { html: t('lab.xy.text') }))));
       setMap(MAPS[0]);
     } },
     // ------------------------------------------------------------------
-    { id: 'crush', name: 'Destructor', col: C.red, desc: 'Saturación y bitcrush: mirá la función de transferencia.', build(root) {
+    { id: 'crush', col: C.red, build(root) {
       E.load({ osc1: { wave: 'sine' } });
       const cv = canvas();
       SL.anim(() => {
@@ -287,14 +288,14 @@
         g.beginPath();
         for (let i = 0; i <= 200; i++) { const s = tf(Math.sin((i / 200) * Math.PI * 4)); g.lineTo(x0 + (i / 200) * W, oy - (s * S) / 2.4); }
         g.strokeStyle = C.cyan; g.lineWidth = 2.5 * d; g.shadowColor = C.cyan; g.shadowBlur = 10 * d; g.stroke();
-        g.shadowBlur = 0; SL.label(g, 'ENTRADA → SALIDA', ox, 16 * d, d); SL.label(g, 'SENO ANTES / DESPUÉS', x0, 16 * d, d);
+        g.shadowBlur = 0; SL.label(g, t('lab.crush.io'), ox, 16 * d, d); SL.label(g, t('lab.crush.ba'), x0, 16 * d, d);
       });
       const sc = h('canvas', { class: 'stage-cv' }), sv = SL.viz.spectrum(sc);
       SL.anim(sv);
       root.append(h('div', { class: 'stage' }, cv), h('div', { class: 'scroll' },
         card(SL.control('fx.drive'), SL.control('fx.crush'), SL.control('osc1.wave')),
         card(h('div', { class: 'spec-wrap tall' }, sc)),
-        card(h('p', { html: 'Toda distorsión es una <b>función de transferencia</b>: para cada valor de entrada, devuelve uno de salida. Si la curva es una recta, nada cambia. Si se dobla (saturación) o se vuelve escalera (bitcrush), la onda se deforma y nacen <b>armónicos nuevos</b> — miralos en el espectro.' }))),
+        card(h('p', { html: t('lab.crush.text') }))),
         dock({ start: 48 }));
     } },
   ];
